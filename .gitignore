@@ -41,3 +41,12 @@ $RECYCLE.BIN/
 Network Trash Folder
 Temporary Items
 .apdisk
+
+# Visual Studio Temp
+/Debug
+*.opensdf
+*.sdf
+ImageProcessing.v11.suo
+/ImageProcessingApp/Debug
+/ImageProcessingLib/Debug
+/ImageProcessingLib/ImageProcessingLib.vcxproj.user

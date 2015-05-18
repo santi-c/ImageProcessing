@@ -12,6 +12,7 @@ public:
 	//void faceRecognizer(Mat img);
 	//void getPersonalInformation();
 	//void updateStoreFaces();
+	void cropSection(cv::Mat img, int posX, int posY, int widthX, int heightY);
 
 };
 

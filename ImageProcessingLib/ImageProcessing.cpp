@@ -33,7 +33,7 @@ void ImageProcessing::detectAndCropFace(Mat img){
 		//Crop and save face
 		Rect croppedArea(faces[i].x, faces[i].y, faces[i].width, faces[i].height);
 		Mat croppedImg(img(croppedArea).clone());
-		imwrite("cropped.jpg", croppedImg);
+		imwrite("data\\cropped.jpg", croppedImg);
 		imshow("Crop",croppedImg);
 
 		// draw the box detect
@@ -47,4 +47,12 @@ void ImageProcessing::detectAndCropFace(Mat img){
 
 	//Display image with face detect
 	imshow("FaceDetect", img);
+}
+
+void ImageProcessing::cropSection(Mat img, int posX, int posY, int widthX, int heightY){
+		//Crop and save face
+		Rect croppedArea(posX, posY, widthX, heightY);
+		Mat croppedImg(img(croppedArea).clone());
+		imwrite("data\\croppedSection.jpg", croppedImg);
+		imshow("CropSection",croppedImg);
 }

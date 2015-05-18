@@ -41,6 +41,12 @@ int main( int argc, const char** argv )
 	ImageProcessing service;
 	service.detectAndCropFace(frame);
 
+	Mat fram2 = imread("data\\MyPic.jpg");
+	//show the image
+	imshow(window_name, fram2);
+	service.cropSection(fram2, 10,20,100,75);
+
+
 	////-- 1. Load the cascades to detect face
 	//if(!face_cascade.load( face_cascade_name ) ){ printf("--(!)Error loading\n"); return -1; };
 	////if(!eyes_cascade.load( eyes_cascade_name ) ){ printf("--(!)Error loading\n"); return -1; };
