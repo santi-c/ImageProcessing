@@ -1,0 +1,29 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ImageProcessingLib", "ImageProcessingLib\ImageProcessingLib.vcxproj", "{46BE1A8E-D5CB-4E0F-8B20-DCFD3CBE47F3}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ImageProcessingApp", "ImageProcessingApp\ImageProcessingApp.vcxproj", "{D42FDA22-9D33-4711-B740-5F8D3575E97B}"
+	ProjectSection(ProjectDependencies) = postProject
+		{46BE1A8E-D5CB-4E0F-8B20-DCFD3CBE47F3} = {46BE1A8E-D5CB-4E0F-8B20-DCFD3CBE47F3}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{46BE1A8E-D5CB-4E0F-8B20-DCFD3CBE47F3}.Debug|Win32.ActiveCfg = Debug|Win32
+		{46BE1A8E-D5CB-4E0F-8B20-DCFD3CBE47F3}.Debug|Win32.Build.0 = Debug|Win32
+		{46BE1A8E-D5CB-4E0F-8B20-DCFD3CBE47F3}.Release|Win32.ActiveCfg = Release|Win32
+		{46BE1A8E-D5CB-4E0F-8B20-DCFD3CBE47F3}.Release|Win32.Build.0 = Release|Win32
+		{D42FDA22-9D33-4711-B740-5F8D3575E97B}.Debug|Win32.ActiveCfg = Debug|Win32
+		{D42FDA22-9D33-4711-B740-5F8D3575E97B}.Debug|Win32.Build.0 = Debug|Win32
+		{D42FDA22-9D33-4711-B740-5F8D3575E97B}.Release|Win32.ActiveCfg = Release|Win32
+		{D42FDA22-9D33-4711-B740-5F8D3575E97B}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
