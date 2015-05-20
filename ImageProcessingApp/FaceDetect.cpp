@@ -13,12 +13,7 @@ using namespace cv;
 using namespace ip;
 
 
-///** Global variables */
-//String face_cascade_name = "haarcascade_frontalface_alt.xml";
-////String face_cascade_name = "lbpcascade_frontalface.xml";
-//String eyes_cascade_name = "haarcascade_eye_tree_eyeglasses.xml";
-//CascadeClassifier face_cascade;
-////CascadeClassifier eyes_cascade;
+/** Global variables */
 string window_name = "Face detection";
 //RNG rng(12345);
 
@@ -36,6 +31,11 @@ int main( int argc, const char** argv )
 		cerr << "ERROR: Missing file argument" << endl;
 		return 1;
 	}
+
+	ImageProcessing service;
+	service.splitData("P<UTOERIKSSON<<ANNA<MARIA<<<<<<<<<<<<<<<<<<<", "L898902C<3UTO6908061F9406236ZE184226B<<<<<14");
+
+
 	//Read image
 
 	Mat inputImage = imread(image, CV_LOAD_IMAGE_GRAYSCALE);
@@ -50,7 +50,6 @@ int main( int argc, const char** argv )
 	namedWindow(window_name, CV_WINDOW_NORMAL);
 	imshow(window_name, inputImage);
 
-	ImageProcessing service;
 	service.detectAndCropFace(inputImage);
 
 	//Mat fram2 = imread("data\\MyPic.jpg");
@@ -60,6 +59,7 @@ int main( int argc, const char** argv )
 
 	string firstLine = "";
 	string secondLine = "";
+
 
 	if(service.getTextFromImage(inputImage, firstLine, secondLine))
 	{
@@ -100,6 +100,7 @@ int main( int argc, const char** argv )
 	//}
 	//
 	//imshow( window_name, frame );
+
 	waitKey(0);
     return 0;
 }

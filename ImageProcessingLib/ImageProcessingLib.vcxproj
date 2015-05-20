@@ -78,6 +78,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="IdentityDocument.h" />
     <ClInclude Include="ImageProcessing.h" />
   </ItemGroup>
   <ItemGroup>

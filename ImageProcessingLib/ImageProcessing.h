@@ -3,6 +3,7 @@
 
 #include "baseapi.h"
 #include "opencv2/highgui/highgui.hpp"
+#include "IdentityDocument.h"
 
 namespace ip
 {
@@ -17,7 +18,8 @@ public:
 	//void faceRecognizer(Mat img);
 	bool getTextFromImage(cv::Mat & img, std::string & firstLine, std::string & secondLine);
 	//void updateStoreFaces();
-	void cropSection(cv::Mat & img, int posX, int posY, int widthX, int heightY);
+	cv::Mat cropSection(cv::Mat img, int posX, int posY, int widthX, int heightY);
+	IdentityDocument splitData(string zone1, string zone2);
 
 private:
 	tesseract::TessBaseAPI * myOCR;
