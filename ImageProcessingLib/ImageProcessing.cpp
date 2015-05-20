@@ -150,16 +150,7 @@ ImageProcessing::~ImageProcessing()
   myOCR->End();
 }
 
-cv::Mat ImageProcessing::cropSection(Mat img, int posX, int posY, int widthX, int heightY){
-		//Crop and save face
-		Rect croppedArea(posX, posY, widthX, heightY);
-		Mat croppedImg(img(croppedArea).clone());
-		imwrite("data\\croppedSection.jpg", croppedImg);
-		imshow("CropSection",croppedImg);
-		return croppedImg;
-}
-
-IdentityDocument ImageProcessing::splitData(string zone1, string zone2){
+void ImageProcessing::splitData(IdentityDocument & passport, string & zone1, string & zone2){
 	//Processing Surnames and Names
 	string parseFullName = zone1.substr(5,40);
 	std::string delimiter = "<<";
@@ -179,24 +170,24 @@ IdentityDocument ImageProcessing::splitData(string zone1, string zone2){
 		}
 	}
 
-	IdentityDocument *passport = new IdentityDocument();
+	//IdentityDocument *passport = new IdentityDocument();
 	//Zone 1
-	passport->setType(zone1.substr(0,1));
-	passport->setCountry(zone1.substr(2,3));
-	passport->setSurnames(surname);	
-	passport->setGivenNames(token);
+	passport.setType(zone1.substr(0,1));
+	passport.setCountry(zone1.substr(2,3));
+	passport.setSurnames(surname);	
+	passport.setGivenNames(token);
 
 	//Zone 2
 	size_t lenghtId = zone2.find('<');
-	passport->setId(zone2.substr(0,lenghtId));
-	passport->setCheckId(zone2.substr(9,1));
-	passport->setNationality(zone2.substr(10,3));
-	passport->setDateBirth(zone2.substr(13,6));
-	passport->setCheckBirth(zone2.substr(19,1));
-	passport->setSex(zone2.substr(20,1));
-	passport->setDateExpiry(zone2.substr(21,6));
-	passport->setCheckExpiry(zone2.substr(27,1));
-	passport->setOptionalData(zone2.substr(28,zone2.substr(28,14).find(delimiter2)));
-	passport->setCheckOptional(zone2.substr(42,1));
-	return *passport;
+	passport.setId(zone2.substr(0,lenghtId));
+	passport.setCheckId(zone2.substr(9,1));
+	passport.setNationality(zone2.substr(10,3));
+	passport.setDateBirth(zone2.substr(13,6));
+	passport.setCheckBirth(zone2.substr(19,1));
+	passport.setSex(zone2.substr(20,1));
+	passport.setDateExpiry(zone2.substr(21,6));
+	passport.setCheckExpiry(zone2.substr(27,1));
+	passport.setOptionalData(zone2.substr(28,zone2.substr(28,14).find(delimiter2)));
+	passport.setCheckOptional(zone2.substr(42,1));
+
 }

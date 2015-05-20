@@ -18,8 +18,8 @@ public:
 	//void faceRecognizer(Mat img);
 	bool getTextFromImage(cv::Mat & img, std::string & firstLine, std::string & secondLine);
 	//void updateStoreFaces();
-	cv::Mat cropSection(cv::Mat img, int posX, int posY, int widthX, int heightY);
-	IdentityDocument splitData(string zone1, string zone2);
+	void cropSection(cv::Mat & img, int posX, int posY, int widthX, int heightY);
+	void splitData(IdentityDocument & idDoc, string & zone1, string & zone2);
 
 private:
 	tesseract::TessBaseAPI * myOCR;

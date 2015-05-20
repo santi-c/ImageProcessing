@@ -32,10 +32,6 @@ int main( int argc, const char** argv )
 		return 1;
 	}
 
-	ImageProcessing service;
-	service.splitData("P<UTOERIKSSON<<ANNA<MARIA<<<<<<<<<<<<<<<<<<<", "L898902C<3UTO6908061F9406236ZE184226B<<<<<14");
-
-
 	//Read image
 
 	Mat inputImage = imread(image, CV_LOAD_IMAGE_GRAYSCALE);
@@ -50,6 +46,7 @@ int main( int argc, const char** argv )
 	namedWindow(window_name, CV_WINDOW_NORMAL);
 	imshow(window_name, inputImage);
 
+	ImageProcessing service;
 	service.detectAndCropFace(inputImage);
 
 	//Mat fram2 = imread("data\\MyPic.jpg");
@@ -59,11 +56,31 @@ int main( int argc, const char** argv )
 
 	string firstLine = "";
 	string secondLine = "";
+	IdentityDocument idDoc;
 
 
 	if(service.getTextFromImage(inputImage, firstLine, secondLine))
 	{
 		cout << "Text from image: First line: " << firstLine << ". Second line: " << secondLine << endl;
+		service.splitData(idDoc, firstLine, secondLine);
+		//Zone 1
+		cout << "Type: " << idDoc.getType() << endl;
+		cout << "Country: " << idDoc.getCountry() << endl;
+		cout << "Surnames: " << idDoc.getSurnames() << endl;
+		cout << "Given names: " << idDoc.getGivenNames() << endl;
+
+		//Zone 2
+		cout << "Id: " << idDoc.getId() << endl;
+		cout << "CheckId: " << idDoc.getCheckId() << endl;
+		cout << "Nationality: " << idDoc.getNationality() << endl;
+		cout << "Birth date: " << idDoc.getDateBirth() << endl;
+		cout << "Birth check: " << idDoc.getCheckBirth() << endl;
+		cout << "Sex: " << idDoc.getSex() << endl;
+		cout << "Date expiry: " << idDoc.getDateExpiry() << endl;
+		cout << "Check expiry: " << idDoc.getCheckExpiry() << endl;
+		cout << "Optional data: " << idDoc.getOptionalData() << endl;
+		cout << "Check optional: " << idDoc.getCheckOptional() << endl;
+
 	}
 
 	////-- 1. Load the cascades to detect face
