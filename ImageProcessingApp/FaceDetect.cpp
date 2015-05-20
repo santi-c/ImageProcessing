@@ -25,27 +25,46 @@ string window_name = "Face detection";
 /** @function main */
 int main( int argc, const char** argv )
 {
-	//Read image
-	const char * image = "data\\MyPic4.JPG";
-	Mat frame = imread(image);
+	const char * image;
 
-	if(frame.empty())
+	if(argc > 1)
+	{
+		image = argv[1];
+	}
+	else
+	{
+		cerr << "ERROR: Missing file argument" << endl;
+		return 1;
+	}
+	//Read image
+
+	Mat inputImage = imread(image, CV_LOAD_IMAGE_GRAYSCALE);
+
+	if(inputImage.empty())
 	{
 		cout << "Error loading " << image << " file." << endl;
 		return 1;
 	}
 
 	//show the image
-	imshow(window_name, frame);
+	namedWindow(window_name, CV_WINDOW_NORMAL);
+	imshow(window_name, inputImage);
 
 	ImageProcessing service;
-	service.detectAndCropFace(frame);
+	service.detectAndCropFace(inputImage);
 
-	Mat fram2 = imread("data\\MyPic.jpg");
+	//Mat fram2 = imread("data\\MyPic.jpg");
 	//show the image
-	imshow(window_name, fram2);
-	service.cropSection(fram2, 10,20,100,75);
+	//imshow(window_name, fram2);
+	service.cropSection(inputImage, 518, 585, 300, 200);
 
+	string firstLine = "";
+	string secondLine = "";
+
+	if(service.getTextFromImage(inputImage, firstLine, secondLine))
+	{
+		cout << "Text from image: First line: " << firstLine << ". Second line: " << secondLine << endl;
+	}
 
 	////-- 1. Load the cascades to detect face
 	//if(!face_cascade.load( face_cascade_name ) ){ printf("--(!)Error loading\n"); return -1; };

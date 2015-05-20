@@ -44,9 +44,12 @@ Temporary Items
 
 # Visual Studio Temp
 /Debug
+/Release
 *.opensdf
 *.sdf
 ImageProcessing.v11.suo
 /ImageProcessingApp/Debug
 /ImageProcessingLib/Debug
+/ImageProcessingApp/Release
+/ImageProcessingLib/Release
 /ImageProcessingLib/ImageProcessingLib.vcxproj.user
