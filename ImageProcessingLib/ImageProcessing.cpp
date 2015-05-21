@@ -169,7 +169,9 @@ void ImageProcessing::splitData(IdentityDocument & passport, string & zone1, str
 			token += ' '; //add space between names
 		}
 	}
-
+	//Providing token is empty (no delimiters), we have one name
+	if(token.length()==0 && name.length())
+		token = name;
 	//IdentityDocument *passport = new IdentityDocument();
 	//Zone 1
 	passport.setType(zone1.substr(0,1));
