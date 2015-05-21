@@ -89,16 +89,14 @@ bool ImageProcessing::getTextFromImage(cv::Mat & img, std::string & firstLine, s
 	tesseract::PageSegMode pagesegmode = static_cast<tesseract::PageSegMode>(7); // treat the image as a single text line
 	myOCR->SetPageSegMode(pagesegmode);
 
-	// read image
-	//namedWindow("tesseract-opencv", CV_WINDOW_NORMAL);
-	//imshow("tesseract-opencv", img);
-
-	// set region of interest (ROI), i.e. regions that contain text
-	const int xPos = static_cast<int>(img.cols * (3.0 / 100.0));
-	const int yPos1 = static_cast<int>(img.rows * (80.0 / 100.0));
-	const int yPos2 = static_cast<int>(img.rows * (87.0 / 100.0));
-	const int width = static_cast<int>(img.cols * (90.0 / 100.0));
+	///////////////////////////////////////////////////////////////////////////
+	// TODO: remove hardcoded rect positions by detection the zone in the image
+	const int xPos = static_cast<int>(img.cols * (1.0 / 100.0));
+	const int yPos1 = static_cast<int>(img.rows * (83.0 / 100.0));
+	const int yPos2 = static_cast<int>(img.rows * (90.0 / 100.0));
+	const int width = static_cast<int>(img.cols * (93.0 / 100.0));
 	const int height = static_cast<int>(img.rows * (7.0 / 100.0));
+	///////////////////////////////////////////////////////////////////////////
 
 	Rect text1ROI(xPos, yPos1, width, height);
 	Rect text2ROI(xPos, yPos2, width, height);

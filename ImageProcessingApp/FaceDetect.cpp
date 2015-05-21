@@ -49,14 +49,13 @@ int main( int argc, const char** argv )
 	ImageProcessing service;
 	service.detectAndCropFace(inputImage);
 
-	//Mat fram2 = imread("data\\MyPic.jpg");
-	//show the image
-	//imshow(window_name, fram2);
-
-	const int xPos = static_cast<int>(inputImage.cols * (2.0 / 3.0));
-	const int yPos = static_cast<int>(inputImage.rows * (1.0 / 2.0));
-	const int width = static_cast<int>(inputImage.cols * (1.0 / 3.0));
-	const int height = static_cast<int>(inputImage.rows * (1.0 / 4.0));
+	///////////////////////////////////////////////////////////////////////////
+	// TODO: remove hardcoded rect positions by detection the zone in the image
+	const int xPos = static_cast<int>(inputImage.cols * (65.0 / 100.0));
+	const int yPos = static_cast<int>(inputImage.rows * (63.0 / 100.0));
+	const int width = static_cast<int>(inputImage.cols * (30.0 / 100.0));
+	const int height = static_cast<int>(inputImage.rows * (20.0 / 100.0));
+	///////////////////////////////////////////////////////////////////////////
 
 	service.cropSection(inputImage, xPos, yPos, width, height);
 
@@ -86,7 +85,6 @@ int main( int argc, const char** argv )
 		cout << "Check expiry: " << idDoc.getCheckExpiry() << endl;
 		cout << "Optional data: " << idDoc.getOptionalData() << endl;
 		cout << "Check optional: " << idDoc.getCheckOptional() << endl;
-
 	}
 
 	////-- 1. Load the cascades to detect face
