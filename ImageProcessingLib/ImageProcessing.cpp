@@ -94,8 +94,14 @@ bool ImageProcessing::getTextFromImage(cv::Mat & img, std::string & firstLine, s
 	//imshow("tesseract-opencv", img);
 
 	// set region of interest (ROI), i.e. regions that contain text
-	Rect text1ROI(110, 750, 835, 80);
-	Rect text2ROI(110, 830, 1400, 80);
+	const int xPos = static_cast<int>(img.cols * (3.0 / 100.0));
+	const int yPos1 = static_cast<int>(img.rows * (80.0 / 100.0));
+	const int yPos2 = static_cast<int>(img.rows * (87.0 / 100.0));
+	const int width = static_cast<int>(img.cols * (90.0 / 100.0));
+	const int height = static_cast<int>(img.rows * (7.0 / 100.0));
+
+	Rect text1ROI(xPos, yPos1, width, height);
+	Rect text2ROI(xPos, yPos2, width, height);
 
 	// recognize text
 	myOCR->TesseractRect( img.data, 1, img.step1(), text1ROI.x, text1ROI.y, text1ROI.width, text1ROI.height);
@@ -122,8 +128,8 @@ bool ImageProcessing::getTextFromImage(cv::Mat & img, std::string & firstLine, s
 	//printf(t2.c_str());
 	//printf("\n");
 
-	//// draw text on original image
-	//Mat scratch = imread("sample2.png");
+	// draw text on original image
+	//Mat scratch = img.clone();
 
 	//int fontFace = FONT_HERSHEY_PLAIN;
 	//double fontScale = 2;

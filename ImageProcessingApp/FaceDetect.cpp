@@ -52,7 +52,13 @@ int main( int argc, const char** argv )
 	//Mat fram2 = imread("data\\MyPic.jpg");
 	//show the image
 	//imshow(window_name, fram2);
-	service.cropSection(inputImage, 518, 585, 300, 200);
+
+	const int xPos = static_cast<int>(inputImage.cols * (2.0 / 3.0));
+	const int yPos = static_cast<int>(inputImage.rows * (1.0 / 2.0));
+	const int width = static_cast<int>(inputImage.cols * (1.0 / 3.0));
+	const int height = static_cast<int>(inputImage.rows * (1.0 / 4.0));
+
+	service.cropSection(inputImage, xPos, yPos, width, height);
 
 	string firstLine = "";
 	string secondLine = "";
