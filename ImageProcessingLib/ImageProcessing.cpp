@@ -68,6 +68,10 @@ void ImageProcessing::detectAndCropFace(Mat & img){
 	imshow("Face Detected", img);
 }
 
+void ImageProcessing::cropSection(cv::Mat & img, CvRect section){
+	return ImageProcessing::cropSection(img, section.x, section.y, section.width, section.height);
+}
+
 void ImageProcessing::cropSection(Mat & img, int posX, int posY, int widthX, int heightY){
 	//Crop and save face
 	Rect croppedArea(posX, posY, widthX, heightY);
@@ -90,7 +94,9 @@ bool ImageProcessing::getTextFromImage(cv::Mat & img, std::string & firstLine, s
 	myOCR->SetPageSegMode(pagesegmode);
 
 	Mat newImg = img.clone();
-
+	ip::Template *passportTemplate = ip::ImageProcessing::getTemplate();
+	/*
+	//Indian Passport
 	///////////////////////////////////////////////////////////////////////////
 	// TODO: remove hardcoded rect positions by detecting the zone in the image
 	const int xPos = static_cast<int>(newImg.cols * (2.0 / 100.0));
@@ -99,9 +105,26 @@ bool ImageProcessing::getTextFromImage(cv::Mat & img, std::string & firstLine, s
 	const int width = static_cast<int>(newImg.cols * (93.0 / 100.0));
 	const int height = static_cast<int>(newImg.rows * (7.0 / 100.0));
 	///////////////////////////////////////////////////////////////////////////
+	*/
+	/*
+	//USA Passport
+	///////////////////////////////////////////////////////////////////////////
+	// TODO: remove hardcoded rect positions by detecting the zone in the image
+	const int xPos = static_cast<int>(newImg.cols * (2.0 / 100.0));
+	const int yPos1 = static_cast<int>(newImg.rows * (91.0 / 100.0));
+	const int yPos2 = static_cast<int>(newImg.rows * (95.0 / 100.0));
+	const int width = static_cast<int>(newImg.cols * (93.0 / 100.0));
+	const int height = static_cast<int>(newImg.rows * (4.0 / 100.0));
+	///////////////////////////////////////////////////////////////////////////
+	*/
 
-	Rect text1ROI(xPos, yPos1, width, height);
-	Rect text2ROI(xPos, yPos2, width, height);
+
+	//MRZ
+	//Rect text1ROI(xPos, yPos1, width, height);
+	//Rect text2ROI(xPos, yPos2, width, height);
+	Rect text1ROI(passportTemplate->getMrz1());
+	Rect text2ROI(passportTemplate->getMrz2());
+
 
 	// recognize text in the first line
 	myOCR->SetVariable("tessedit_char_whitelist", "ABCDEFGHIJKLMNOPQRSTUVWXYZ<");
@@ -189,8 +212,12 @@ void ImageProcessing::splitData(IdentityDocument & passport, string & zone1, str
 	passport.setGivenNames(token);
 
 	//Zone 2
-	size_t lenghtId = zone2.find('<');
-	passport.setId(zone2.substr(0,lenghtId));
+	string vId = zone2.substr(0,9);
+	size_t lenghtId = vId.find('<');
+	if (lenghtId!=std::string::npos)
+		passport.setId(vId.substr(0,lenghtId));
+	else
+		passport.setId(vId);
 	passport.setCheckId(zone2.substr(9,1));
 	passport.setNationality(zone2.substr(10,3));
 	passport.setDateBirth(zone2.substr(13,6));

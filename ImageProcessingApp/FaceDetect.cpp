@@ -46,9 +46,13 @@ int main( int argc, const char** argv )
 	namedWindow(window_name, CV_WINDOW_NORMAL);
 	imshow(window_name, inputImage);
 
+	//Service
 	ImageProcessing service;
+	//Passport Template, set design
+	service.setTemplate(new Template(inputImage, 2));
 	service.detectAndCropFace(inputImage);
 
+	/* IMAGE_1
 	///////////////////////////////////////////////////////////////////////////
 	// TODO: remove hardcoded rect positions by detection the zone in the image
 	const int xPos = static_cast<int>(inputImage.cols * (65.0 / 100.0));
@@ -56,8 +60,31 @@ int main( int argc, const char** argv )
 	const int width = static_cast<int>(inputImage.cols * (30.0 / 100.0));
 	const int height = static_cast<int>(inputImage.rows * (20.0 / 100.0));
 	///////////////////////////////////////////////////////////////////////////
+	*/
 
-	service.cropSection(inputImage, xPos, yPos, width, height);
+	/*//IMAGE_13.tif - Indian Passport
+	///////////////////////////////////////////////////////////////////////////
+	// TODO: remove hardcoded rect positions by detection the zone in the image
+	const int xPos = static_cast<int>(inputImage.cols * (6.0 / 100.0));
+	const int yPos = static_cast<int>(inputImage.rows * (55.0 / 100.0));
+	const int width = static_cast<int>(inputImage.cols * (38.0 / 100.0));
+	const int height = static_cast<int>(inputImage.rows * (20.0 / 100.0));
+	///////////////////////////////////////////////////////////////////////////
+	
+	//IMAGE_18/19.tif - USA Passport
+	///////////////////////////////////////////////////////////////////////////
+	// TODO: remove hardcoded rect positions by detection the zone in the image
+	const int xPos = static_cast<int>(inputImage.cols * (12.0 / 100.0));
+	const int yPos = static_cast<int>(inputImage.rows * (38.0 / 100.0));
+	const int width = static_cast<int>(inputImage.cols * (75.0 / 100.0));
+	const int height = static_cast<int>(inputImage.rows * (12.0 / 100.0));
+	///////////////////////////////////////////////////////////////////////////
+	*/
+
+	//Signature
+	//service.cropSection(inputImage, xPos, yPos, width, height);	
+	//ip::Template *templateDoc = new Template(inputImage, 2);
+	service.cropSection(inputImage,service.getTemplate()->getSignature());
 
 	string firstLine = "";
 	string secondLine = "";
