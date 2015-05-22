@@ -19,15 +19,10 @@ public:
 	//void faceRecognizer(Mat img);
 	bool getTextFromImage(const cv::Mat &, IdentityDocument &);
 	//void updateStoreFaces();
-<<<<<<< HEAD
-	void cropSection(const cv::Mat &, int, int, int, int);
-=======
 	void cropSection(cv::Mat & img, CvRect section);
 	void cropSection(cv::Mat & img, int posX, int posY, int widthX, int heightY);
-	void splitData(IdentityDocument & idDoc, string & zone1, string & zone2);
 	Template* getTemplate(){return templateType;};
 	void setTemplate(Template *mTemplateType){templateType = mTemplateType;};
->>>>>>> origin/master
 
 private:
 	tesseract::TessBaseAPI * myOCR;
