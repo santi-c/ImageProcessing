@@ -59,15 +59,10 @@ int main( int argc, const char** argv )
 
 	service.cropSection(inputImage, xPos, yPos, width, height);
 
-	string firstLine = "";
-	string secondLine = "";
 	IdentityDocument idDoc;
 
-
-	if(service.getTextFromImage(inputImage, firstLine, secondLine))
+	if(service.getTextFromImage(inputImage, idDoc))
 	{
-		cout << "Text from image: First line: " << firstLine << ". Second line: " << secondLine << endl;
-		service.splitData(idDoc, firstLine, secondLine);
 		//Zone 1
 		cout << "Type: " << idDoc.getType() << endl;
 		cout << "Country: " << idDoc.getCountry() << endl;
@@ -85,6 +80,8 @@ int main( int argc, const char** argv )
 		cout << "Check expiry: " << idDoc.getCheckExpiry() << endl;
 		cout << "Optional data: " << idDoc.getOptionalData() << endl;
 		cout << "Check optional: " << idDoc.getCheckOptional() << endl;
+		cout << "Check overall: " << idDoc.getCheckOverall() << endl;
+
 	}
 
 	////-- 1. Load the cascades to detect face

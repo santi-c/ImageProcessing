@@ -14,17 +14,19 @@ public:
 	ImageProcessing();
 	~ImageProcessing();
 
-	void detectAndCropFace(cv::Mat & img);
+	void detectAndCropFace(const cv::Mat &);
 	//void faceRecognizer(Mat img);
-	bool getTextFromImage(cv::Mat & img, std::string & firstLine, std::string & secondLine);
+	bool getTextFromImage(const cv::Mat &, IdentityDocument &);
 	//void updateStoreFaces();
-	void cropSection(cv::Mat & img, int posX, int posY, int widthX, int heightY);
-	void splitData(IdentityDocument & idDoc, string & zone1, string & zone2);
+	void cropSection(const cv::Mat &, int, int, int, int);
 
 private:
 	tesseract::TessBaseAPI * myOCR;
 	const char * text1;
 	const char * text2;
+
+	void splitData(IdentityDocument &, const string &, const string &);
+	bool preprocessImg(cv::Mat &, cv::Rect &);
 
 };
 

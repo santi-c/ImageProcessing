@@ -82,6 +82,7 @@
     <ClInclude Include="ImageProcessing.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="IdentityDocument.cpp" />
     <ClCompile Include="ImageProcessing.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

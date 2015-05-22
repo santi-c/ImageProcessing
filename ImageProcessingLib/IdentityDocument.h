@@ -1,77 +1,87 @@
 #ifndef IDENTITY_DOCUMENT_H
 #define IDENTITY_DOCUMENT_H
 
-#include <stdio.h>
 #include <iostream>
 
 using namespace std;
+namespace ip
+{
 
 class IdentityDocument{
-	string id;
-	string checkId;
-	string type;
-	string country;
-	string surnames;
-	string givenNames;
-	string sex;
-	string nationality;
-	string dateBirth;
-	string checkBirth;
-	string placeBirth;
-	string dateIssue;
-	string dateExpiry;
-	string checkExpiry;
-	string optionalData;
-	string checkOptional;
+	string mId;
+	string mCheckId;
+	string mType;
+	string mCountry;
+	string mSurnames;
+	string mGivenNames;
+	string mSex;
+	string mNationality;
+	string mDateBirth;
+	string mCheckBirth;
+	string mPlaceBirth;
+	string mDateIssue;
+	string mDateExpiry;
+	string mCheckExpiry;
+	string mOptionalData;
+	string mCheckOptional;
+	string mCheckOverall;
 
 public:
-	string getId(){return id;};
-	void setId(string mId){id = mId;};
 
-	string getCheckId(){return checkId;};
-	void setCheckId(string mCheckId){checkId = mCheckId;};
+	IdentityDocument();
 
-	string getType(){return type;};
-	void setType(string mType){type = mType;};
+	string getId(){return mId;};
+	void setId(string id){mId = id;};
 
-	string getCountry(){return country;};
-	void setCountry(string mCountry){country = mCountry;};
+	string getCheckId(){return mCheckId;};
+	void setCheckId(string checkId){mCheckId = checkId;};
 
-	string getSurnames(){return surnames;};
-	void setSurnames(string mSurnames){surnames = mSurnames;};
+	string getType(){return mType;};
+	void setType(string type){mType = type;};
 
-	string getGivenNames(){return givenNames;};
-	void setGivenNames(string mGivenNames){givenNames = mGivenNames;};
+	string getCountry(){return mCountry;};
+	void setCountry(string country){mCountry = country;};
 
-	string getSex(){return sex;};
-	void setSex(string mSex){sex = mSex;};
+	string getSurnames(){return mSurnames;};
+	void setSurnames(string surnames){mSurnames = surnames;};
 
-	string getNationality(){return nationality;};
-	void setNationality(string mNationality){nationality = mNationality;};
+	string getGivenNames(){return mGivenNames;};
+	void setGivenNames(string givenNames){mGivenNames = givenNames;};
 
-	string getDateBirth(){return dateBirth;};
-	void setDateBirth(string mDateBirth){dateBirth = mDateBirth;};
+	string getSex(){return mSex;};
+	void setSex(string sex){mSex = sex;};
 
-	string getCheckBirth(){return checkBirth;};
-	void setCheckBirth(string mCheckBirth){checkBirth = mCheckBirth;};
+	string getNationality(){return mNationality;};
+	void setNationality(string nationality){mNationality = nationality;};
 
-	string getPlaceBirth(){return placeBirth;};
-	void setPlaceBirth(string mPlaceBirth){placeBirth = mPlaceBirth;};
+	string getDateBirth(){return mDateBirth;};
+	void setDateBirth(string dateBirth){mDateBirth = dateBirth;};
 
-	string getDateIssue(){return dateIssue;};
-	void setDateIssue(string mDateIssue){dateIssue = mDateIssue;};
+	string getCheckBirth(){return mCheckBirth;};
+	void setCheckBirth(string checkBirth){mCheckBirth = checkBirth;};
 
-	string getDateExpiry(){return dateExpiry;};
-	void setDateExpiry(string mDateExpiry){dateExpiry = mDateExpiry;};
+	string getPlaceBirth(){return mPlaceBirth;};
+	void setPlaceBirth(string placeBirth){mPlaceBirth = placeBirth;};
 
-	string getCheckExpiry(){return checkExpiry;};
-	void setCheckExpiry(string mCheckExpiry){checkExpiry = mCheckExpiry;};
+	string getDateIssue(){return mDateIssue;};
+	void setDateIssue(string dateIssue){mDateIssue = dateIssue;};
 
-	string getOptionalData(){return optionalData;};
-	void setOptionalData(string mOptionalData){optionalData = mOptionalData;};
+	string getDateExpiry(){return mDateExpiry;};
+	void setDateExpiry(string dateExpiry){mDateExpiry = dateExpiry;};
 
-	string getCheckOptional(){return checkOptional;};
-	void setCheckOptional(string mCheckOptional){checkOptional = mCheckOptional;};
+	string getCheckExpiry(){return mCheckExpiry;};
+	void setCheckExpiry(string checkExpiry){mCheckExpiry = checkExpiry;};
+
+	string getOptionalData(){return mOptionalData;};
+	void setOptionalData(string optionalData){mOptionalData = optionalData;};
+
+	string getCheckOptional(){return mCheckOptional;};
+	void setCheckOptional(string checkOptional){mCheckOptional = checkOptional;};
+
+	string getCheckOverall(){return mCheckOverall;};
+	void setCheckOverall(string checkOverall){mCheckOverall = checkOverall;};
 };
+
+} // Namespace ip
 
 #endif

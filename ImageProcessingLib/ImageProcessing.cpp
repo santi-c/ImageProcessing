@@ -21,7 +21,10 @@ ImageProcessing::ImageProcessing()
          getLeptonicaVersion());
 }
 
-void ImageProcessing::detectAndCropFace(Mat & img){
+void ImageProcessing::detectAndCropFace(const Mat & srcImg)
+{
+	Mat img(srcImg.clone());
+
 	//Load the cascades to detect face
 	String face_cascade_name = "..\\ImageProcessingApp\\algorithms\\haarcascade_frontalface_alt.xml";
 	//String face_cascade_name = "lbpcascade_frontalface.xml";
@@ -32,7 +35,7 @@ void ImageProcessing::detectAndCropFace(Mat & img){
 	}
 
 	//Prepare image, gray image
-	std::vector<Rect> faces;
+	vector<Rect> faces;
 	//Mat img_gray;
 	//cvtColor(img, img_gray, CV_BGR2GRAY);
 	//equalizeHist(img_gray, img_gray);
@@ -68,7 +71,8 @@ void ImageProcessing::detectAndCropFace(Mat & img){
 	imshow("Face Detected", img);
 }
 
-void ImageProcessing::cropSection(Mat & img, int posX, int posY, int widthX, int heightY){
+void ImageProcessing::cropSection(const Mat & img, int posX, int posY, int widthX, int heightY)
+{
 	//Crop and save face
 	Rect croppedArea(posX, posY, widthX, heightY);
 	Mat croppedImg(img(croppedArea).clone());
@@ -78,7 +82,7 @@ void ImageProcessing::cropSection(Mat & img, int posX, int posY, int widthX, int
 	imshow("Cropped section",croppedImg);
 }
 
-bool ImageProcessing::getTextFromImage(cv::Mat & img, std::string & firstLine, std::string & secondLine)
+bool ImageProcessing::getTextFromImage(const Mat & img, IdentityDocument & idDoc)
 {
 
 	if (myOCR->Init(NULL, "eng")) {
@@ -103,6 +107,8 @@ bool ImageProcessing::getTextFromImage(cv::Mat & img, std::string & firstLine, s
 	Rect text1ROI(xPos, yPos1, width, height);
 	Rect text2ROI(xPos, yPos2, width, height);
 
+	preprocessImg(newImg, text1ROI);
+
 	// recognize text in the first line
 	myOCR->SetVariable("tessedit_char_whitelist", "ABCDEFGHIJKLMNOPQRSTUVWXYZ<");
 	myOCR->TesseractRect( newImg.data, 1, newImg.step1(), text1ROI.x, text1ROI.y, text1ROI.width, text1ROI.height);
@@ -115,12 +121,19 @@ bool ImageProcessing::getTextFromImage(cv::Mat & img, std::string & firstLine, s
 
 	// remove "newline"
 	string t1(text1);
-	t1.erase(std::remove(t1.begin(), t1.end(), '\n'), t1.end());
-	firstLine = t1;
+	t1.erase(remove(t1.begin(), t1.end(), '\n'), t1.end());
+	if(t1.length() != 44)	//	44 characters per line
+	{
+		t1 = "";
+	}
 
 	string t2(text2);
-	t2.erase(std::remove(t2.begin(), t2.end(), '\n'), t2.end());
-	secondLine = t2;
+	t2.erase(remove(t2.begin(), t2.end(), '\n'), t2.end());
+	if(t2.length() != 44)	//	44 characters per line
+	{
+		t2 = "";
+	}
+	splitData(idDoc, t1, t2);
 
 	//// print found text
 	//printf("found text1: \n");
@@ -159,46 +172,93 @@ ImageProcessing::~ImageProcessing()
   myOCR->End();
 }
 
-void ImageProcessing::splitData(IdentityDocument & passport, string & zone1, string & zone2){
-	//Processing Surnames and Names
-	string parseFullName = zone1.substr(5,40);
-	std::string delimiter = "<<";
-	std::string delimiter2 = "<";
-	string surname = parseFullName.substr(0, parseFullName.find(delimiter));
-	string name = parseFullName.erase(0, parseFullName.find(delimiter) + delimiter.length());
-	//Clean delimiter in surnames
-	replace(surname.begin(), surname.end(), '<', ' ');
-	//Names
-	size_t pos = 0;
-	std::string token;
-	while((pos = name.find(delimiter2))!= std::string::npos) {
-		token += name.substr(0, pos);
-		name.erase(0,pos + 1);
-		if(name.length()>0 && name.substr(0,1) != delimiter2){
-			token += ' '; //add space between names
+void ImageProcessing::splitData(IdentityDocument & passport, const string & zone1, const string & zone2)
+{
+	cout << "Text from image: First line: " << zone1 << ". Second line: " << zone2 << endl;
+
+	string delimiter = "<<";
+	string delimiter2 = "<";
+
+	if(!zone1.empty())
+	{
+		//Processing Surnames and Names
+		string parseFullName = zone1.substr(5,40);
+		string surname = parseFullName.substr(0, parseFullName.find(delimiter));
+		string name = parseFullName.erase(0, parseFullName.find(delimiter) + delimiter.length());
+		//Clean delimiter in surnames
+		replace(surname.begin(), surname.end(), '<', ' ');
+		//Names
+		size_t pos = 0;
+		string token;
+		while((pos = name.find(delimiter2))!= string::npos) {
+			token += name.substr(0, pos);
+			name.erase(0,pos + 1);
+			if(name.length()>0 && name.substr(0,1) != delimiter2){
+				token += ' '; //add space between names
+			}
 		}
+		//Providing token is empty (no delimiters), we have one name
+		if(token.length()==0 && name.length())
+			token = name;
+		//IdentityDocument *passport = new IdentityDocument();
+		//Zone 1
+		passport.setType(zone1.substr(0,1));
+		passport.setCountry(zone1.substr(2,3));
+		passport.setSurnames(surname);	
+		passport.setGivenNames(token);
 	}
-	//Providing token is empty (no delimiters), we have one name
-	if(token.length()==0 && name.length())
-		token = name;
-	//IdentityDocument *passport = new IdentityDocument();
-	//Zone 1
-	passport.setType(zone1.substr(0,1));
-	passport.setCountry(zone1.substr(2,3));
-	passport.setSurnames(surname);	
-	passport.setGivenNames(token);
 
-	//Zone 2
-	size_t lenghtId = zone2.find('<');
-	passport.setId(zone2.substr(0,lenghtId));
-	passport.setCheckId(zone2.substr(9,1));
-	passport.setNationality(zone2.substr(10,3));
-	passport.setDateBirth(zone2.substr(13,6));
-	passport.setCheckBirth(zone2.substr(19,1));
-	passport.setSex(zone2.substr(20,1));
-	passport.setDateExpiry(zone2.substr(21,6));
-	passport.setCheckExpiry(zone2.substr(27,1));
-	passport.setOptionalData(zone2.substr(28,zone2.substr(28,14).find(delimiter2)));
-	passport.setCheckOptional(zone2.substr(42,1));
+	if(!zone2.empty())
+	{
+		//Zone 2
+		size_t lenghtId = zone2.find('<');
+		passport.setId(zone2.substr(0,lenghtId));
+		passport.setCheckId(zone2.substr(9,1));
+		passport.setNationality(zone2.substr(10,3));
+		passport.setDateBirth(zone2.substr(13,6));
+		passport.setCheckBirth(zone2.substr(19,1));
+		passport.setSex(zone2.substr(20,1));
+		passport.setDateExpiry(zone2.substr(21,6));
+		passport.setCheckExpiry(zone2.substr(27,1));
+		passport.setOptionalData(zone2.substr(28,zone2.substr(28,14).find(delimiter2)));
+		passport.setCheckOptional(zone2.substr(42,zone2.substr(42,1).find(delimiter2)));
+		passport.setCheckOverall(zone2.substr(43,1));
+	}
+}
 
+bool ImageProcessing::preprocessImg(Mat & srcImg, Rect & mrzROI)
+{
+	vector<Vec4i> lines;
+	Mat newImg(srcImg(mrzROI).clone());
+	Size sizeImg = newImg.size();
+
+	//bitwise_not(srcImg, srcImg);
+
+	HoughLinesP(newImg, lines, 1, CV_PI/180, 100, sizeImg.width / 2.f, 20);
+
+	Mat disp_lines(sizeImg, CV_8UC1, Scalar(0, 0, 0));
+    double angle = 0.;
+    unsigned nb_lines = lines.size();
+    for (unsigned i = 0; i < nb_lines; ++i)
+    {
+        line(disp_lines, Point(lines[i][0], lines[i][1]),
+                 Point(lines[i][2], lines[i][3]), Scalar(255, 0 ,0));
+        angle += atan2((double)lines[i][3] - lines[i][1],
+                       (double)lines[i][2] - lines[i][0]);
+    }
+    angle /= nb_lines; // mean angle, in radians.
+ 
+    cout << "Angle: " << angle * 180 / CV_PI << std::endl;
+ 
+	// Rotate the image
+	Point2f pt(srcImg.cols / 2, srcImg.rows / 2);
+	Mat rotMatrix = getRotationMatrix2D(pt, angle, 1.0);
+	warpAffine(srcImg, srcImg, rotMatrix, Size(srcImg.cols, srcImg.rows));
+
+
+	// Binary threshold
+	//threshold(srcImg, srcImg, 155.0, 255, 0);
+	threshold(srcImg, srcImg, 155.0, 255, 3);
+
+	return 0;
 }
