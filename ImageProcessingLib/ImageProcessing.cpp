@@ -89,23 +89,28 @@ bool ImageProcessing::getTextFromImage(cv::Mat & img, std::string & firstLine, s
 	tesseract::PageSegMode pagesegmode = static_cast<tesseract::PageSegMode>(7); // treat the image as a single text line
 	myOCR->SetPageSegMode(pagesegmode);
 
+	Mat newImg = img.clone();
+
 	///////////////////////////////////////////////////////////////////////////
-	// TODO: remove hardcoded rect positions by detection the zone in the image
-	const int xPos = static_cast<int>(img.cols * (1.0 / 100.0));
-	const int yPos1 = static_cast<int>(img.rows * (83.0 / 100.0));
-	const int yPos2 = static_cast<int>(img.rows * (90.0 / 100.0));
-	const int width = static_cast<int>(img.cols * (93.0 / 100.0));
-	const int height = static_cast<int>(img.rows * (7.0 / 100.0));
+	// TODO: remove hardcoded rect positions by detecting the zone in the image
+	const int xPos = static_cast<int>(newImg.cols * (2.0 / 100.0));
+	const int yPos1 = static_cast<int>(newImg.rows * (80.0 / 100.0));
+	const int yPos2 = static_cast<int>(newImg.rows * (87.0 / 100.0));
+	const int width = static_cast<int>(newImg.cols * (93.0 / 100.0));
+	const int height = static_cast<int>(newImg.rows * (7.0 / 100.0));
 	///////////////////////////////////////////////////////////////////////////
 
 	Rect text1ROI(xPos, yPos1, width, height);
 	Rect text2ROI(xPos, yPos2, width, height);
 
-	// recognize text
-	myOCR->TesseractRect( img.data, 1, img.step1(), text1ROI.x, text1ROI.y, text1ROI.width, text1ROI.height);
+	// recognize text in the first line
+	myOCR->SetVariable("tessedit_char_whitelist", "ABCDEFGHIJKLMNOPQRSTUVWXYZ<");
+	myOCR->TesseractRect( newImg.data, 1, newImg.step1(), text1ROI.x, text1ROI.y, text1ROI.width, text1ROI.height);
 	text1 = myOCR->GetUTF8Text();
 
-	myOCR->TesseractRect( img.data, 1, img.step1(), text2ROI.x, text2ROI.y, text2ROI.width, text2ROI.height);
+	// recognize text in the second line
+	myOCR->SetVariable("tessedit_char_whitelist", "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ<");
+	myOCR->TesseractRect( newImg.data, 1, newImg.step1(), text2ROI.x, text2ROI.y, text2ROI.width, text2ROI.height);
 	text2 = myOCR->GetUTF8Text();
 
 	// remove "newline"
@@ -135,10 +140,10 @@ bool ImageProcessing::getTextFromImage(cv::Mat & img, std::string & firstLine, s
 	//putText(scratch, t1, Point(text1ROI.x, text1ROI.y), fontFace, fontScale, Scalar(0, 255, 0), thickness, 8);
 	//putText(scratch, t2, Point(text2ROI.x, text2ROI.y), fontFace, fontScale, Scalar(0, 255, 0), thickness, 8);
 
-	//rectangle(scratch, text1ROI, Scalar(0, 0, 255), 2, 8, 0);
-	//rectangle(scratch, text2ROI, Scalar(0, 0, 255), 2, 8, 0);
+	rectangle(newImg, text1ROI, Scalar(0, 0, 255), 2, 8, 0);
+	rectangle(newImg, text2ROI, Scalar(0, 0, 255), 2, 8, 0);
 
-	//imshow("tesseract-opencv", scratch);
+	imshow("tesseract-opencv", newImg);
 	//waitKey(0);
 	return true;
 
