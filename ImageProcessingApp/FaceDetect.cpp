@@ -33,11 +33,8 @@ int main( int argc, const char** argv )
 	}
 
 	//Read image
-
 	Mat inputImage = imread(image, CV_LOAD_IMAGE_GRAYSCALE);
-
-	if(inputImage.empty())
-	{
+	if(inputImage.empty()){
 		cout << "Error loading " << image << " file." << endl;
 		return 1;
 	}
@@ -46,48 +43,16 @@ int main( int argc, const char** argv )
 	namedWindow(window_name, CV_WINDOW_NORMAL);
 	imshow(window_name, inputImage);
 
-	//Service
+	//----- Service -------//
 	ImageProcessing service;
-	//Passport Template, set design
-	service.setTemplate(new Template(inputImage, 2));
+	//Passport Template, set design -> 1 = Indio, 2 = USA (Default)
+	service.setTemplate(new Template(inputImage, 1));
+	//Detect, crop and show Face
 	service.detectAndCropFace(inputImage);
-
-	/* IMAGE_1
-	///////////////////////////////////////////////////////////////////////////
-	// TODO: remove hardcoded rect positions by detection the zone in the image
-	const int xPos = static_cast<int>(inputImage.cols * (65.0 / 100.0));
-	const int yPos = static_cast<int>(inputImage.rows * (63.0 / 100.0));
-	const int width = static_cast<int>(inputImage.cols * (30.0 / 100.0));
-	const int height = static_cast<int>(inputImage.rows * (20.0 / 100.0));
-	///////////////////////////////////////////////////////////////////////////
-	*/
-
-	/*//IMAGE_13.tif - Indian Passport
-	///////////////////////////////////////////////////////////////////////////
-	// TODO: remove hardcoded rect positions by detection the zone in the image
-	const int xPos = static_cast<int>(inputImage.cols * (6.0 / 100.0));
-	const int yPos = static_cast<int>(inputImage.rows * (55.0 / 100.0));
-	const int width = static_cast<int>(inputImage.cols * (38.0 / 100.0));
-	const int height = static_cast<int>(inputImage.rows * (20.0 / 100.0));
-	///////////////////////////////////////////////////////////////////////////
-	
-	//IMAGE_18/19.tif - USA Passport
-	///////////////////////////////////////////////////////////////////////////
-	// TODO: remove hardcoded rect positions by detection the zone in the image
-	const int xPos = static_cast<int>(inputImage.cols * (12.0 / 100.0));
-	const int yPos = static_cast<int>(inputImage.rows * (38.0 / 100.0));
-	const int width = static_cast<int>(inputImage.cols * (75.0 / 100.0));
-	const int height = static_cast<int>(inputImage.rows * (12.0 / 100.0));
-	///////////////////////////////////////////////////////////////////////////
-	*/
-
-	//Signature
-	//service.cropSection(inputImage, xPos, yPos, width, height);	
-	//ip::Template *templateDoc = new Template(inputImage, 2);
+	//Signature, crop and show
 	service.cropSection(inputImage,service.getTemplate()->getSignature());
-
+	//Data from Image and output
 	IdentityDocument idDoc;
-
 	if(service.getTextFromImage(inputImage, idDoc))
 	{
 		//Zone 1
@@ -110,41 +75,6 @@ int main( int argc, const char** argv )
 		cout << "Check overall: " << idDoc.getCheckOverall() << endl;
 
 	}
-
-	////-- 1. Load the cascades to detect face
-	//if(!face_cascade.load( face_cascade_name ) ){ printf("--(!)Error loading\n"); return -1; };
-	////if(!eyes_cascade.load( eyes_cascade_name ) ){ printf("--(!)Error loading\n"); return -1; };
-
- //  
-	////Prepare image, gray image
-	//std::vector<Rect> faces;
-	//Mat frame_gray;
-
-	//cvtColor( frame, frame_gray, CV_BGR2GRAY );
-	//equalizeHist(frame_gray, frame_gray);
-
-	////-- Detect faces in gray image
-	//face_cascade.detectMultiScale( frame_gray, faces, 1.1, 2, 0|CV_HAAR_SCALE_IMAGE, Size(30, 30) );
-	//
-	//// Search faces, Just once in this case
-	//for(size_t i = 0; i < faces.size(); i++)
-	//{
-	//	////Crop and save face
-	//	//Rect croppedArea(faces[i].x, faces[i].y, faces[i].x + faces[i].width, faces[i].y + faces[i].height);
-	//	//Mat croppedImg(frame(croppedArea).clone());
-	//	//imwrite("cropped.jpg", croppedImg);
-	//	//imshow("Crop",croppedImg);
-
-	//	// draw the box detect
-	//	rectangle(frame, 
-	//		Point(faces[i].x, faces[i].y),//up left
-	//		Point(faces[i].x + faces[i].width, faces[i].y + faces[i].height),
-	//		Scalar(0,0,255),// line color
-	//		2 //line size
-	//		);
-	//}
-	//
-	//imshow( window_name, frame );
 
 	waitKey(0);
     return 0;

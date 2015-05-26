@@ -100,35 +100,9 @@ bool ImageProcessing::getTextFromImage(const Mat & img, IdentityDocument & idDoc
 	Mat newImg = img.clone();
 	ip::Template *passportTemplate = ip::ImageProcessing::getTemplate();
 
-	//Indian Passport
-	///////////////////////////////////////////////////////////////////////////
-	// TODO: remove hardcoded rect positions by detecting the zone in the image
-	//const int xPos = static_cast<int>(newImg.cols * (2.0 / 100.0));
-	//const int yPos1 = static_cast<int>(newImg.rows * (80.0 / 100.0));
-	//const int yPos2 = static_cast<int>(newImg.rows * (87.0 / 100.0));
-	//const int width = static_cast<int>(newImg.cols * (93.0 / 100.0));
-	//const int height = static_cast<int>(newImg.rows * (7.0 / 100.0));
-	///////////////////////////////////////////////////////////////////////////
-
-	/*
-	//USA Passport
-	///////////////////////////////////////////////////////////////////////////
-	// TODO: remove hardcoded rect positions by detecting the zone in the image
-	const int xPos = static_cast<int>(newImg.cols * (2.0 / 100.0));
-	const int yPos1 = static_cast<int>(newImg.rows * (91.0 / 100.0));
-	const int yPos2 = static_cast<int>(newImg.rows * (95.0 / 100.0));
-	const int width = static_cast<int>(newImg.cols * (93.0 / 100.0));
-	const int height = static_cast<int>(newImg.rows * (4.0 / 100.0));
-	///////////////////////////////////////////////////////////////////////////
-	*/
-
-
 	//MRZ
-	//Rect text1ROI(xPos, yPos1, width, height);
-	//Rect text2ROI(xPos, yPos2, width, height);
 	Rect text1ROI(passportTemplate->getMrz1());
 	Rect text2ROI(passportTemplate->getMrz2());
-
 
 	preprocessImg(newImg, text1ROI);
 
@@ -234,8 +208,12 @@ void ImageProcessing::splitData(IdentityDocument & passport, const string & zone
 	if(!zone2.empty())
 	{
 		//Zone 2
-		size_t lenghtId = zone2.find('<');
-		passport.setId(zone2.substr(0,lenghtId));
+		string vId = zone2.substr(0,9);
+		size_t lenghtId = vId.find('<');
+		if (lenghtId!=std::string::npos)
+			passport.setId(vId.substr(0,lenghtId));
+		else
+			passport.setId(vId);
 		passport.setCheckId(zone2.substr(9,1));
 		passport.setNationality(zone2.substr(10,3));
 		passport.setDateBirth(zone2.substr(13,6));
@@ -281,7 +259,8 @@ bool ImageProcessing::preprocessImg(Mat & srcImg, Rect & mrzROI)
 
 	// Binary threshold
 	//threshold(srcImg, srcImg, 155.0, 255, 0);
-	threshold(srcImg, srcImg, 155.0, 255, 3);
+	threshold(srcImg, srcImg, 155.0, 255, 3); //Img_13 , Img_19
+	//threshold(srcImg, srcImg, 132.0, 255, 3); //Img_18
 
 	return 0;
 }
