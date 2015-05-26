@@ -103,11 +103,11 @@ bool ImageProcessing::getTextFromImage(const Mat & img, IdentityDocument & idDoc
 	//Indian Passport
 	///////////////////////////////////////////////////////////////////////////
 	// TODO: remove hardcoded rect positions by detecting the zone in the image
-	//const int xPos = static_cast<int>(newImg.cols * (2.0 / 100.0));
-	//const int yPos1 = static_cast<int>(newImg.rows * (80.0 / 100.0));
-	//const int yPos2 = static_cast<int>(newImg.rows * (87.0 / 100.0));
-	//const int width = static_cast<int>(newImg.cols * (93.0 / 100.0));
-	//const int height = static_cast<int>(newImg.rows * (7.0 / 100.0));
+	const int xPos = static_cast<int>(newImg.cols * (2.0 / 100.0));
+	const int yPos1 = static_cast<int>(newImg.rows * (80.0 / 100.0));
+	const int yPos2 = static_cast<int>(newImg.rows * (87.0 / 100.0));
+	const int width = static_cast<int>(newImg.cols * (93.0 / 100.0));
+	const int height = static_cast<int>(newImg.rows * (7.0 / 100.0));
 	///////////////////////////////////////////////////////////////////////////
 
 	/*
@@ -124,10 +124,10 @@ bool ImageProcessing::getTextFromImage(const Mat & img, IdentityDocument & idDoc
 
 
 	//MRZ
-	//Rect text1ROI(xPos, yPos1, width, height);
-	//Rect text2ROI(xPos, yPos2, width, height);
-	Rect text1ROI(passportTemplate->getMrz1());
-	Rect text2ROI(passportTemplate->getMrz2());
+	Rect text1ROI(xPos, yPos1, width, height);
+	Rect text2ROI(xPos, yPos2, width, height);
+	//Rect text1ROI(passportTemplate->getMrz1());
+	//Rect text2ROI(passportTemplate->getMrz2());
 
 
 	preprocessImg(newImg, text1ROI);
