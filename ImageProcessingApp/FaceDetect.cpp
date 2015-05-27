@@ -45,9 +45,7 @@ int main( int argc, const char** argv )
 
 	//----- Service -------//
 	ImageProcessing service;
-	//Set path directory
-	//string path = image;
-	//service.setPath(path.substr(0, path.find_last_of('\\') +1));
+	//Set path, directory and default fileName
 	service.setPath(image);
 	//Passport Template, set design -> 1 = Indio, 2 = USA (Default)
 	service.setTemplate(new Template(inputImage, 1));
@@ -76,7 +74,7 @@ int main( int argc, const char** argv )
 
 	}
 	//Detect, crop and show Face
-	service.detectAndCropFace(inputImage);
+	service.cropSection(inputImage, service.detectFace(inputImage), "Face");
 	//Signature, crop and show
 	service.cropSection(inputImage,service.getTemplate()->getSignature(), "Signature");
 

@@ -11,13 +11,15 @@ using namespace std;
 using namespace cv;
 using namespace ip;
 
+static string sep = "_";
+
 ImageProcessing::ImageProcessing() : ID_3_PASSPORT_HEIGHT(88.0), ID_3_PASSPORT_WIDTH(125.0)
 {
   // initilize tesseract OCR engine
   myOCR = new tesseract::TessBaseAPI();
 }
 
-void ImageProcessing::detectAndCropFace(const Mat & srcImg)
+CvRect ImageProcessing::detectFace(const Mat & srcImg)
 {
 	Mat img(srcImg.clone());
 
@@ -38,12 +40,13 @@ void ImageProcessing::detectAndCropFace(const Mat & srcImg)
 	
 	//Cropped Imag
 	Mat croppedImg;
-
+	CvRect faceSection;
 	//Search faces, Just once in this case
 	for(size_t i = 0; i < faces.size(); i++)
 	{
+		faceSection = cvRect(faces[i].x, faces[i].y, faces[i].width, faces[i].height);
 		//Crop and save face
-		cropSection(img, faces[i].x, faces[i].y, faces[i].width, faces[i].height, "Face");
+		//cropSection(img, faces[i].x, faces[i].y, faces[i].width, faces[i].height, "Face");
 		/*
 		Rect croppedArea(faces[i].x, faces[i].y, faces[i].width, faces[i].height);
 		croppedImg = img(croppedArea).clone();
@@ -64,6 +67,8 @@ void ImageProcessing::detectAndCropFace(const Mat & srcImg)
 	//Display image with face detect
 	namedWindow("Face Detected", CV_WINDOW_NORMAL);
 	imshow("Face Detected", img);
+
+	return faceSection;
 }
 
 void ImageProcessing::cropSection(const Mat & img, CvRect section, const string &fileName){
@@ -75,7 +80,7 @@ void ImageProcessing::cropSection(const Mat & img, int posX, int posY, int width
 	//Crop and save face
 	Rect croppedArea(posX, posY, widthX, heightY);
 	Mat croppedImg(img(croppedArea).clone());
-	imwrite(directory + fileName + ".jpg", croppedImg);
+	imwrite(directory + fName + fileName + ".jpg", croppedImg);
 
 	namedWindow("Cropped section " + fileName, CV_WINDOW_AUTOSIZE);
 	imshow("Cropped section " + fileName,croppedImg);
@@ -198,6 +203,10 @@ void ImageProcessing::splitData(IdentityDocument & passport, const string & zone
 		passport.setCountry(zone1.substr(2,3));
 		passport.setSurnames(surname);	
 		passport.setGivenNames(token);
+
+		//Set File Name
+		if(passport.getSurnames().length() || passport.getGivenNames().length())
+			fName = passport.getSurnames()+ sep + passport.getGivenNames() + sep;
 	}
 
 	if(!zone2.empty())
@@ -253,9 +262,9 @@ bool ImageProcessing::preprocessImg(Mat & srcImg, Rect & mrzROI)
 }
 
 void ImageProcessing::dataToFile(IdentityDocument & idDoc){
-	cout << "File created: " + directory + idDoc.getSurnames() + idDoc.getGivenNames() + ".txt"<< endl;
+	cout << "File created: " + directory + fName + ".txt"<< endl;
 	//Open Data File
-	ofstream dataFile( directory + idDoc.getSurnames() + idDoc.getGivenNames() + ".txt");
+	ofstream dataFile( directory + fName + ".txt");
 	if (dataFile.is_open()){
 		//Zone 1
 		dataFile << "Type: " << idDoc.getType() << endl;

@@ -15,7 +15,7 @@ public:
 	ImageProcessing();
 	~ImageProcessing();
 
-	void detectAndCropFace(const cv::Mat &);
+	CvRect detectFace(const cv::Mat &);
 	//void faceRecognizer(Mat img);
 	bool getTextFromImage(const cv::Mat &, IdentityDocument &);
 	//void updateStoreFaces();
@@ -25,7 +25,11 @@ public:
 	Template* getTemplate(){return templateType;};
 	void setTemplate(Template *mTemplateType){templateType = mTemplateType;};
 	string getPath(){return path;};
-	void setPath(string mPath){path = mPath; directory = path.substr(0, path.find_last_of('\\') +1);};
+	void setPath(string mPath){
+		path = mPath; 
+		directory = path.substr(0, path.find_last_of('\\') +1);
+		fName = path.substr(path.find_last_of('\\')+1, path.find_last_of('.'));
+	};
 
 private:
 	tesseract::TessBaseAPI * myOCR;
@@ -34,6 +38,7 @@ private:
 	Template *templateType;
 	string path;
 	string directory;
+	string fName;
 
 	void splitData(IdentityDocument &, const string &, const string &);
 	bool preprocessImg(cv::Mat &, cv::Rect &);
