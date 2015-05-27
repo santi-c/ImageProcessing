@@ -45,12 +45,12 @@ int main( int argc, const char** argv )
 
 	//----- Service -------//
 	ImageProcessing service;
+	//Set path directory
+	//string path = image;
+	//service.setPath(path.substr(0, path.find_last_of('\\') +1));
+	service.setPath(image);
 	//Passport Template, set design -> 1 = Indio, 2 = USA (Default)
 	service.setTemplate(new Template(inputImage, 1));
-	//Detect, crop and show Face
-	service.detectAndCropFace(inputImage);
-	//Signature, crop and show
-	service.cropSection(inputImage,service.getTemplate()->getSignature());
 	//Data from Image and output
 	IdentityDocument idDoc;
 	if(service.getTextFromImage(inputImage, idDoc))
@@ -75,6 +75,10 @@ int main( int argc, const char** argv )
 		cout << "Check overall: " << idDoc.getCheckOverall() << endl;
 
 	}
+	//Detect, crop and show Face
+	service.detectAndCropFace(inputImage);
+	//Signature, crop and show
+	service.cropSection(inputImage,service.getTemplate()->getSignature(), "Signature");
 
 	waitKey(0);
     return 0;
