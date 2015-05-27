@@ -19,8 +19,8 @@ public:
 	//void faceRecognizer(Mat img);
 	bool getTextFromImage(const cv::Mat &, IdentityDocument &);
 	//void updateStoreFaces();
-	void cropSection(cv::Mat & img, CvRect section);
-	void cropSection(cv::Mat & img, int posX, int posY, int widthX, int heightY);
+	void cropSection(const cv::Mat & img, CvRect section);
+	void cropSection(const cv::Mat & img, int posX, int posY, int widthX, int heightY);
 	Template* getTemplate(){return templateType;};
 	void setTemplate(Template *mTemplateType){templateType = mTemplateType;};
 

@@ -14,11 +14,6 @@ ImageProcessing::ImageProcessing()
 {
   // initilize tesseract OCR engine
   myOCR = new tesseract::TessBaseAPI();
-
-  printf("Tesseract-ocr version: %s\n",
-         myOCR->Version());
-  printf("Leptonica version: %s\n",
-         getLeptonicaVersion());
 }
 
 void ImageProcessing::detectAndCropFace(const Mat & srcImg)
@@ -27,7 +22,7 @@ void ImageProcessing::detectAndCropFace(const Mat & srcImg)
 
 	//Load the cascades to detect face
 	String face_cascade_name = "..\\ImageProcessingApp\\algorithms\\haarcascade_frontalface_alt.xml";
-	//String face_cascade_name = "lbpcascade_frontalface.xml";
+
 	CascadeClassifier face_cascade;
 	if(!face_cascade.load(face_cascade_name))
 	{
@@ -36,12 +31,9 @@ void ImageProcessing::detectAndCropFace(const Mat & srcImg)
 
 	//Prepare image, gray image
 	vector<Rect> faces;
-	//Mat img_gray;
-	//cvtColor(img, img_gray, CV_BGR2GRAY);
-	//equalizeHist(img_gray, img_gray);
 
 	//Detect faces in gray image
-	face_cascade.detectMultiScale(img, faces, 1.1, 2, 0|CV_HAAR_SCALE_IMAGE, Size(30, 30));
+	face_cascade.detectMultiScale(img, faces, 1.1, 4, 0|CV_HAAR_SCALE_IMAGE, Size(30, 30));
 	
 	//Cropped Imag
 	Mat croppedImg;
@@ -71,11 +63,11 @@ void ImageProcessing::detectAndCropFace(const Mat & srcImg)
 	imshow("Face Detected", img);
 }
 
-void ImageProcessing::cropSection(cv::Mat & img, CvRect section){
+void ImageProcessing::cropSection(const Mat & img, CvRect section){
 	return ImageProcessing::cropSection(img, section.x, section.y, section.width, section.height);
 }
 
-void ImageProcessing::cropSection(Mat & img, int posX, int posY, int widthX, int heightY){
+void ImageProcessing::cropSection(const Mat & img, int posX, int posY, int widthX, int heightY){
 
 	//Crop and save face
 	Rect croppedArea(posX, posY, widthX, heightY);
@@ -132,41 +124,26 @@ bool ImageProcessing::getTextFromImage(const Mat & img, IdentityDocument & idDoc
 	}
 	splitData(idDoc, t1, t2);
 
-	//// print found text
-	//printf("found text1: \n");
-	//printf(t1.c_str());
-	//printf("\n");
+	rectangle(newImg, text1ROI, Scalar(255, 255, 255), 2, 8, 0);
+	rectangle(newImg, text2ROI, Scalar(255, 255, 255), 2, 8, 0);
 
-	//printf("found text2: \n");
-	//printf(t2.c_str());
-	//printf("\n");
-
-	// draw text on original image
-	//Mat scratch = img.clone();
-
-	//int fontFace = FONT_HERSHEY_PLAIN;
-	//double fontScale = 2;
-	//int thickness = 2;
-	//putText(scratch, t1, Point(text1ROI.x, text1ROI.y), fontFace, fontScale, Scalar(0, 255, 0), thickness, 8);
-	//putText(scratch, t2, Point(text2ROI.x, text2ROI.y), fontFace, fontScale, Scalar(0, 255, 0), thickness, 8);
-
-	rectangle(newImg, text1ROI, Scalar(0, 0, 255), 2, 8, 0);
-	rectangle(newImg, text2ROI, Scalar(0, 0, 255), 2, 8, 0);
-
+	namedWindow("tesseract-opencv", CV_WINDOW_NORMAL);
 	imshow("tesseract-opencv", newImg);
-	//waitKey(0);
+	
 	return true;
 
 }
 
 ImageProcessing::~ImageProcessing()
 {
-  delete [] text1;
-  delete [] text2;
 
-  // destroy tesseract OCR engine
-  myOCR->Clear();
-  myOCR->End();
+	// TODO: Commented to avoid application crash when closing it
+	//delete [] text1;
+	//delete [] text2;
+
+	// destroy tesseract OCR engine
+	myOCR->Clear();
+	myOCR->End();
 }
 
 void ImageProcessing::splitData(IdentityDocument & passport, const string & zone1, const string & zone2)
@@ -229,38 +206,30 @@ void ImageProcessing::splitData(IdentityDocument & passport, const string & zone
 
 bool ImageProcessing::preprocessImg(Mat & srcImg, Rect & mrzROI)
 {
-	vector<Vec4i> lines;
-	Mat newImg(srcImg(mrzROI).clone());
-	Size sizeImg = newImg.size();
+	// Binary inverted threshold
+	threshold(srcImg, srcImg, 152.0, 255, THRESH_BINARY_INV); //Img_13 , Img_19
 
-	//bitwise_not(srcImg, srcImg);
+	Mat tmpImg(srcImg(mrzROI).clone());
+	Size sizeImg = tmpImg.size();
 
-	HoughLinesP(newImg, lines, 1, CV_PI/180, 100, sizeImg.width / 2.f, 20);
+	std::vector<Point> points;
+	Mat_<uchar>::iterator it = tmpImg.begin<uchar>();
+	Mat_<uchar>::iterator end = tmpImg.end<uchar>();
+	for (; it != end; ++it)
+	{
+		if (*it)
+		{
+			points.push_back(it.pos());
+		}
+	}
 
-	Mat disp_lines(sizeImg, CV_8UC1, Scalar(0, 0, 0));
-    double angle = 0.;
-    unsigned nb_lines = lines.size();
-    for (unsigned i = 0; i < nb_lines; ++i)
-    {
-        line(disp_lines, Point(lines[i][0], lines[i][1]),
-                 Point(lines[i][2], lines[i][3]), Scalar(255, 0 ,0));
-        angle += atan2((double)lines[i][3] - lines[i][1],
-                       (double)lines[i][2] - lines[i][0]);
-    }
-    angle /= nb_lines; // mean angle, in radians.
- 
-    cout << "Angle: " << angle * 180 / CV_PI << std::endl;
- 
-	// Rotate the image
-	Point2f pt(srcImg.cols / 2, srcImg.rows / 2);
-	Mat rotMatrix = getRotationMatrix2D(pt, angle, 1.0);
-	warpAffine(srcImg, srcImg, rotMatrix, Size(srcImg.cols, srcImg.rows));
+	RotatedRect box = minAreaRect(Mat(points));
+	double angle = box.angle;
+	if (angle < -45.)
+		angle += 90.;
+	Mat rot_mat = getRotationMatrix2D(box.center, angle, 1);
 
-
-	// Binary threshold
-	//threshold(srcImg, srcImg, 155.0, 255, 0);
-	threshold(srcImg, srcImg, 155.0, 255, 3); //Img_13 , Img_19
-	//threshold(srcImg, srcImg, 132.0, 255, 3); //Img_18
+	cv::warpAffine(srcImg, srcImg, rot_mat, srcImg.size(), INTER_CUBIC);
 
 	return 0;
 }

@@ -24,22 +24,18 @@
     <ClInclude Include="IdentityDocument.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-<<<<<<< HEAD
-=======
     <ClInclude Include="Template.h">
       <Filter>Header Files</Filter>
     </ClInclude>
->>>>>>> origin/master
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ImageProcessing.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-<<<<<<< HEAD
     <ClCompile Include="IdentityDocument.cpp">
-=======
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="Template.cpp">
->>>>>>> origin/master
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
