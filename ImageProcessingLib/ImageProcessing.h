@@ -38,6 +38,10 @@ private:
 	void splitData(IdentityDocument &, const string &, const string &);
 	bool preprocessImg(cv::Mat &, cv::Rect &);
 	void dataToFile(IdentityDocument &);
+
+	const double ID_3_PASSPORT_HEIGHT;
+	const double ID_3_PASSPORT_WIDTH;
+
 };
 
 }	// Namespace ip

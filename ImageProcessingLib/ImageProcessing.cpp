@@ -11,7 +11,7 @@ using namespace std;
 using namespace cv;
 using namespace ip;
 
-ImageProcessing::ImageProcessing()
+ImageProcessing::ImageProcessing() : ID_3_PASSPORT_HEIGHT(88.0), ID_3_PASSPORT_WIDTH(125.0)
 {
   // initilize tesseract OCR engine
   myOCR = new tesseract::TessBaseAPI();
@@ -34,7 +34,7 @@ void ImageProcessing::detectAndCropFace(const Mat & srcImg)
 	vector<Rect> faces;
 
 	//Detect faces in gray image
-	face_cascade.detectMultiScale(img, faces, 1.1, 4, 0|CV_HAAR_SCALE_IMAGE, Size(30, 30));
+	face_cascade.detectMultiScale(img, faces, 1.1, 5, 0|CV_HAAR_SCALE_IMAGE, Size(30, 30));
 	
 	//Cropped Imag
 	Mat croppedImg;
@@ -96,8 +96,21 @@ bool ImageProcessing::getTextFromImage(const Mat & img, IdentityDocument & idDoc
 	ip::Template *passportTemplate = ip::ImageProcessing::getTemplate();
 
 	//MRZ
-	Rect text1ROI(passportTemplate->getMrz1());
-	Rect text2ROI(passportTemplate->getMrz2());
+	//Rect text1ROI(passportTemplate->getMrz1());
+	//Rect text2ROI(passportTemplate->getMrz2());
+
+	// MRZ first and second lines position relative to top left origin
+	Size sizeImg = img.size();
+	int xPos = static_cast<int>(sizeImg.width * (2.0 / ID_3_PASSPORT_WIDTH));
+	int yPos1 = static_cast<int>(sizeImg.height * (69.07 / ID_3_PASSPORT_HEIGHT));
+	int yPos2 = static_cast<int>(sizeImg.height * (75.42 / ID_3_PASSPORT_HEIGHT));
+
+
+	int width = static_cast<int>(sizeImg.width * (121.0 / ID_3_PASSPORT_WIDTH));
+	int height = static_cast<int>(sizeImg.height * (6.35 / ID_3_PASSPORT_HEIGHT));
+
+	Rect text1ROI(xPos, yPos1, width, height);
+	Rect text2ROI(xPos, yPos2, width, height);
 
 	preprocessImg(newImg, text1ROI);
 
