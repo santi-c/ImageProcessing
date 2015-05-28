@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include "opencv2/objdetect/objdetect.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
 #include "ImageProcessing.h"
@@ -10,6 +11,8 @@ using namespace std;
 using namespace cv;
 using namespace ip;
 
+static string sep = "_";
+
 ImageProcessing::ImageProcessing() : 
 	ID_3_PASSPORT_HEIGHT(88.0),
 	ID_3_PASSPORT_WIDTH(125.0),
@@ -20,7 +23,7 @@ ImageProcessing::ImageProcessing() :
   myOCR = new tesseract::TessBaseAPI();
 }
 
-void ImageProcessing::detectAndCropFace(const Mat & srcImg)
+CvRect ImageProcessing::detectFace(const Mat & srcImg)
 {
 	Mat img(srcImg.clone());
 
@@ -41,18 +44,21 @@ void ImageProcessing::detectAndCropFace(const Mat & srcImg)
 	
 	//Cropped Imag
 	Mat croppedImg;
-
+	CvRect faceSection;
 	//Search faces, Just once in this case
 	for(size_t i = 0; i < faces.size(); i++)
 	{
+		faceSection = cvRect(faces[i].x, faces[i].y, faces[i].width, faces[i].height);
 		//Crop and save face
+		//cropSection(img, faces[i].x, faces[i].y, faces[i].width, faces[i].height, "Face");
+		/*
 		Rect croppedArea(faces[i].x, faces[i].y, faces[i].width, faces[i].height);
 		croppedImg = img(croppedArea).clone();
 		//Mat croppedImg(img(croppedArea).clone());
-		imwrite("data\\cropped.jpg", croppedImg);
+		imwrite(directory + "croppedFace.jpg", croppedImg);
 		namedWindow("Cropped face", CV_WINDOW_NORMAL);
 		imshow("Cropped face",croppedImg);
-
+		*/
 		// draw the box detect
 		rectangle(img, 
 			Point(faces[i].x, faces[i].y),//up left
@@ -65,21 +71,23 @@ void ImageProcessing::detectAndCropFace(const Mat & srcImg)
 	//Display image with face detect
 	namedWindow("Face Detected", CV_WINDOW_NORMAL);
 	imshow("Face Detected", img);
+
+	return faceSection;
 }
 
-void ImageProcessing::cropSection(const Mat & img, CvRect section){
-	return ImageProcessing::cropSection(img, section.x, section.y, section.width, section.height);
+void ImageProcessing::cropSection(const Mat & img, CvRect section, const string &fileName){
+	return ImageProcessing::cropSection(img, section.x, section.y, section.width, section.height, fileName);
 }
 
-void ImageProcessing::cropSection(const Mat & img, int posX, int posY, int widthX, int heightY){
+void ImageProcessing::cropSection(const Mat & img, int posX, int posY, int widthX, int heightY, const string &fileName){
 
 	//Crop and save face
 	Rect croppedArea(posX, posY, widthX, heightY);
 	Mat croppedImg(img(croppedArea).clone());
-	imwrite("data\\croppedSection.jpg", croppedImg);
+	imwrite(directory + fName + fileName + ".jpg", croppedImg);
 
-	namedWindow("Cropped section", CV_WINDOW_AUTOSIZE);
-	imshow("Cropped section",croppedImg);
+	namedWindow("Cropped section " + fileName, CV_WINDOW_AUTOSIZE);
+	imshow("Cropped section " + fileName,croppedImg);
 }
 
 bool ImageProcessing::getTextFromImage(const Mat & img, IdentityDocument & idDoc)
@@ -147,6 +155,8 @@ bool ImageProcessing::getTextFromImage(const Mat & img, IdentityDocument & idDoc
 	namedWindow("tesseract-opencv", CV_WINDOW_NORMAL);
 	imshow("tesseract-opencv", newImg);
 	
+	//Save Data into a file
+	dataToFile(idDoc);
 	return true;
 
 }
@@ -165,7 +175,7 @@ ImageProcessing::~ImageProcessing()
 
 void ImageProcessing::splitData(IdentityDocument & passport, const string & zone1, const string & zone2)
 {
-	cout << "Text from image: First line: " << zone1 << ". Second line: " << zone2 << endl;
+	cout << "Text from image: First line: " << zone1 << endl << "Second line: " << zone2 << endl;
 
 	string delimiter = "<<";
 	string delimiter2 = "<";
@@ -197,6 +207,10 @@ void ImageProcessing::splitData(IdentityDocument & passport, const string & zone
 		passport.setCountry(zone1.substr(2,3));
 		passport.setSurnames(surname);	
 		passport.setGivenNames(token);
+
+		//Set File Name
+		if(passport.getSurnames().length() || passport.getGivenNames().length())
+			fName = passport.getSurnames()+ sep + passport.getGivenNames() + sep;
 	}
 
 	if(!zone2.empty())
@@ -297,7 +311,34 @@ bool ImageProcessing::detectAndCropSignature(const cv::Mat & img)
 	}
 
 	Rect signatureRect(xPos, yPos, width, height);
-	cropSection(img, signatureRect);
+	//cropSection(img, signatureRect);
 
 	return true;
+}
+
+void ImageProcessing::dataToFile(IdentityDocument & idDoc){
+	cout << "File created: " + directory + fName + ".txt"<< endl;
+	//Open Data File
+	ofstream dataFile( directory + fName + ".txt");
+	if (dataFile.is_open()){
+		//Zone 1
+		dataFile << "Type: " << idDoc.getType() << endl;
+		dataFile << "Country: " << idDoc.getCountry() << endl;
+		dataFile << "Surnames: " << idDoc.getSurnames() << endl;
+		dataFile << "Given names: " << idDoc.getGivenNames() << endl;
+		//Zone 2
+		dataFile << "Id: " << idDoc.getId() << endl;
+		dataFile << "CheckId: " << idDoc.getCheckId() << endl;
+		dataFile << "Nationality: " << idDoc.getNationality() << endl;
+		dataFile << "Birth date: " << idDoc.getDateBirth() << endl;
+		dataFile << "Birth check: " << idDoc.getCheckBirth() << endl;
+		dataFile << "Sex: " << idDoc.getSex() << endl;
+		dataFile << "Date expiry: " << idDoc.getDateExpiry() << endl;
+		dataFile << "Check expiry: " << idDoc.getCheckExpiry() << endl;
+		dataFile << "Optional data: " << idDoc.getOptionalData() << endl;
+		dataFile << "Check optional: " << idDoc.getCheckOptional() << endl;
+		dataFile << "Check overall: " << idDoc.getCheckOverall() << endl;
+		dataFile.close();
+	}
+	else cout << "Unable to open file";
 }
