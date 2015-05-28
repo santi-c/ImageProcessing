@@ -10,7 +10,11 @@ using namespace std;
 using namespace cv;
 using namespace ip;
 
-ImageProcessing::ImageProcessing() : ID_3_PASSPORT_HEIGHT(88.0), ID_3_PASSPORT_WIDTH(125.0)
+ImageProcessing::ImageProcessing() : 
+	ID_3_PASSPORT_HEIGHT(88.0),
+	ID_3_PASSPORT_WIDTH(125.0),
+	mrzLine1(""),
+	mrzLine2("")
 {
   // initilize tesseract OCR engine
   myOCR = new tesseract::TessBaseAPI();
@@ -122,20 +126,20 @@ bool ImageProcessing::getTextFromImage(const Mat & img, IdentityDocument & idDoc
 	text2 = myOCR->GetUTF8Text();
 
 	// remove "newline"
-	string t1(text1);
-	t1.erase(remove(t1.begin(), t1.end(), '\n'), t1.end());
-	if(t1.length() != 44)	//	44 characters per line
+	mrzLine1.assign(text1);
+	mrzLine1.erase(remove(mrzLine1.begin(), mrzLine1.end(), '\n'), mrzLine1.end());
+	if(mrzLine1.length() != 44)	//	44 characters per line
 	{
-		t1 = "";
+		mrzLine1.assign("");
 	}
 
-	string t2(text2);
-	t2.erase(remove(t2.begin(), t2.end(), '\n'), t2.end());
-	if(t2.length() != 44)	//	44 characters per line
+	mrzLine2.assign(text2);
+	mrzLine2.erase(remove(mrzLine2.begin(), mrzLine2.end(), '\n'), mrzLine2.end());
+	if(mrzLine2.length() != 44)	//	44 characters per line
 	{
-		t2 = "";
+		mrzLine2.assign("");
 	}
-	splitData(idDoc, t1, t2);
+	splitData(idDoc, mrzLine1, mrzLine2);
 
 	rectangle(newImg, text1ROI, Scalar(255, 255, 255), 2, 8, 0);
 	rectangle(newImg, text2ROI, Scalar(255, 255, 255), 2, 8, 0);
@@ -245,4 +249,55 @@ bool ImageProcessing::preprocessImg(Mat & srcImg, Rect & mrzROI)
 	cv::warpAffine(srcImg, srcImg, rot_mat, srcImg.size(), INTER_CUBIC);
 
 	return 0;
+}
+
+bool ImageProcessing::detectAndCropSignature(const cv::Mat & img)
+{
+	Size sizeImg = img.size();
+	string country;
+	int xPos;
+	int yPos;
+	int width;
+	int height;
+
+	if(!mrzLine1.empty())
+	{
+		country.assign(mrzLine1.substr(2,3));
+	}
+	else if(!mrzLine2.empty())
+	{
+		country.assign(mrzLine2.substr(10,3));
+	}
+	else
+	{
+		cout << "Unable to find signature" << endl;
+		return false;
+	}
+
+	if(country.compare("IND") == 0)
+	{
+		// Define signature zone
+		xPos = static_cast<int>(sizeImg.width * (10.0 / ID_3_PASSPORT_WIDTH));
+		yPos = static_cast<int>(sizeImg.height * (50.0 / ID_3_PASSPORT_HEIGHT));
+		width = static_cast<int>(sizeImg.width * (45.0 / ID_3_PASSPORT_WIDTH));
+		height = static_cast<int>(sizeImg.height * (15.0 / ID_3_PASSPORT_HEIGHT));
+	}
+	else if(country.compare("USA") == 0)
+	{
+		cout << "Unable to find signature" << endl;
+		return false;
+	}
+	else
+	{
+		// Define signature zone
+		xPos = static_cast<int>(sizeImg.width * (75.0 / ID_3_PASSPORT_WIDTH));
+		yPos = static_cast<int>(sizeImg.height * (50.0 / ID_3_PASSPORT_HEIGHT));
+		width = static_cast<int>(sizeImg.width * (48.0 / ID_3_PASSPORT_WIDTH));
+		height = static_cast<int>(sizeImg.height * (15.0 / ID_3_PASSPORT_HEIGHT));
+	}
+
+	Rect signatureRect(xPos, yPos, width, height);
+	cropSection(img, signatureRect);
+
+	return true;
 }

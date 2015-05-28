@@ -49,8 +49,6 @@ int main( int argc, const char** argv )
 	service.setTemplate(new Template(inputImage, 1));
 	//Detect, crop and show Face
 	service.detectAndCropFace(inputImage);
-	//Signature, crop and show
-	service.cropSection(inputImage,service.getTemplate()->getSignature());
 	//Data from Image and output
 	IdentityDocument idDoc;
 	if(service.getTextFromImage(inputImage, idDoc))
@@ -75,6 +73,9 @@ int main( int argc, const char** argv )
 		cout << "Check overall: " << idDoc.getCheckOverall() << endl;
 
 	}
+
+	//Signature, crop and show
+	service.detectAndCropSignature(inputImage);
 
 	waitKey(0);
     return 0;

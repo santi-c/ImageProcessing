@@ -16,6 +16,7 @@ public:
 	~ImageProcessing();
 
 	void detectAndCropFace(const cv::Mat &);
+	bool detectAndCropSignature(const cv::Mat &);
 	//void faceRecognizer(Mat img);
 	bool getTextFromImage(const cv::Mat &, IdentityDocument &);
 	//void updateStoreFaces();
@@ -28,6 +29,10 @@ private:
 	tesseract::TessBaseAPI * myOCR;
 	const char * text1;
 	const char * text2;
+
+	std::string mrzLine1;
+	std::string mrzLine2;
+
 	Template *templateType;
 
 	void splitData(IdentityDocument &, const string &, const string &);
