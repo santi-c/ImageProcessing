@@ -31,7 +31,11 @@ int main( int argc, const char** argv )
 		cerr << "ERROR: Missing file argument" << endl;
 		return 1;
 	}
-
+	
+	//----- Service -------//
+	ImageProcessing service;
+	service.getCustomerInfo(image);
+/*
 	//Read image
 	Mat inputImage = imread(image, CV_LOAD_IMAGE_GRAYSCALE);
 	if(inputImage.empty()){
@@ -80,7 +84,7 @@ int main( int argc, const char** argv )
 
 	//Signature, crop and show
 	service.detectAndCropSignature(inputImage);
-
+*/
 	waitKey(0);
     return 0;
 }

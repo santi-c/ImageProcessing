@@ -23,6 +23,50 @@ ImageProcessing::ImageProcessing() :
   myOCR = new tesseract::TessBaseAPI();
 }
 
+bool ImageProcessing::getCustomerInfo(const string & imgPath){
+	//Read image
+	Mat inputImage = imread(imgPath, CV_LOAD_IMAGE_GRAYSCALE);
+	if(inputImage.empty()){
+		cout << "Error loading " << imgPath << " file." << endl;
+		return 0;
+	}
+	//show the image
+	namedWindow("Image", CV_WINDOW_NORMAL);
+	imshow("Image", inputImage);
+
+	//Set path, directory and default fileName from Image Path
+	setPath(imgPath);
+	//Passport Template, set design -> 1 = Indio, 2 = USA (Default)
+	setTemplate(new Template(inputImage, 1));
+	//Data from Image and output
+	IdentityDocument idDoc;
+	if(getTextFromImage(inputImage, idDoc)){
+		//Zone 1
+		cout << "Type: " << idDoc.getType() << endl;
+		cout << "Country: " << idDoc.getCountry() << endl;
+		cout << "Surnames: " << idDoc.getSurnames() << endl;
+		cout << "Given names: " << idDoc.getGivenNames() << endl;
+
+		//Zone 2
+		cout << "Id: " << idDoc.getId() << endl;
+		cout << "CheckId: " << idDoc.getCheckId() << endl;
+		cout << "Nationality: " << idDoc.getNationality() << endl;
+		cout << "Birth date: " << idDoc.getDateBirth() << endl;
+		cout << "Birth check: " << idDoc.getCheckBirth() << endl;
+		cout << "Sex: " << idDoc.getSex() << endl;
+		cout << "Date expiry: " << idDoc.getDateExpiry() << endl;
+		cout << "Check expiry: " << idDoc.getCheckExpiry() << endl;
+		cout << "Optional data: " << idDoc.getOptionalData() << endl;
+		cout << "Check optional: " << idDoc.getCheckOptional() << endl;
+		cout << "Check overall: " << idDoc.getCheckOverall() << endl;
+	}
+	//Detect, crop and show Face
+	cropSection(inputImage, detectFace(inputImage), "Face");
+	//Signature, crop and show
+	detectAndCropSignature(inputImage);
+	return 1;
+};
+
 CvRect ImageProcessing::detectFace(const Mat & srcImg)
 {
 	Mat img(srcImg.clone());
@@ -48,17 +92,8 @@ CvRect ImageProcessing::detectFace(const Mat & srcImg)
 	//Search faces, Just once in this case
 	for(size_t i = 0; i < faces.size(); i++)
 	{
+		//Section detected
 		faceSection = cvRect(faces[i].x, faces[i].y, faces[i].width, faces[i].height);
-		//Crop and save face
-		//cropSection(img, faces[i].x, faces[i].y, faces[i].width, faces[i].height, "Face");
-		/*
-		Rect croppedArea(faces[i].x, faces[i].y, faces[i].width, faces[i].height);
-		croppedImg = img(croppedArea).clone();
-		//Mat croppedImg(img(croppedArea).clone());
-		imwrite(directory + "croppedFace.jpg", croppedImg);
-		namedWindow("Cropped face", CV_WINDOW_NORMAL);
-		imshow("Cropped face",croppedImg);
-		*/
 		// draw the box detect
 		rectangle(img, 
 			Point(faces[i].x, faces[i].y),//up left
@@ -155,8 +190,9 @@ bool ImageProcessing::getTextFromImage(const Mat & img, IdentityDocument & idDoc
 	namedWindow("tesseract-opencv", CV_WINDOW_NORMAL);
 	imshow("tesseract-opencv", newImg);
 	
-	//Save Data into a file
-	dataToFile(idDoc);
+	//Save Data into a file if exists
+	if (!mrzLine1.empty() || !mrzLine2.empty())
+		dataToFile(idDoc);
 	return true;
 
 }
@@ -209,8 +245,10 @@ void ImageProcessing::splitData(IdentityDocument & passport, const string & zone
 		passport.setGivenNames(token);
 
 		//Set File Name
-		if(passport.getSurnames().length() || passport.getGivenNames().length())
+		if(passport.getSurnames().length() || passport.getGivenNames().length()){
 			fName = passport.getSurnames()+ sep + passport.getGivenNames() + sep;
+			replace(fName.begin(), fName.end(), ' ', '_');//Replace blanks
+		}
 	}
 
 	if(!zone2.empty())

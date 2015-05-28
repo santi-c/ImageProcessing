@@ -11,32 +11,29 @@ namespace ip
 
 class ImageProcessing{
 public:
-
 	ImageProcessing();
 	~ImageProcessing();
 
-	bool detectAndCropSignature(const cv::Mat &);
-	CvRect detectFace(const cv::Mat &);
-
-	//void faceRecognizer(Mat img);
-	bool getTextFromImage(const cv::Mat &, IdentityDocument &);
-	//void updateStoreFaces();
-	void cropSection(const cv::Mat & img, CvRect section, const string &fileName);
-	void cropSection(const cv::Mat & img, int posX, int posY, int widthX, int heightY, const string &fileName);
+	bool getCustomerInfo(const string &);
 	
 	Template* getTemplate(){return templateType;};
 	void setTemplate(Template *mTemplateType){templateType = mTemplateType;};
 	string getPath(){return path;};
 	void setPath(string mPath){
 		path = mPath; 
-		directory = path.substr(0, path.find_last_of('\\') +1);
-		fName = path.substr(path.find_last_of('\\')+1, path.find_last_of('.'));
+		int pos1 = path.find_last_of('\\') +1;
+		int pos2 = path.find_last_of('.');
+		directory = path.substr(0, pos1);
+		fName = path.substr(pos1, pos2-pos1);
 	};
 
 private:
 	tesseract::TessBaseAPI * myOCR;
 	const char * text1;
 	const char * text2;
+
+	const double ID_3_PASSPORT_HEIGHT;
+	const double ID_3_PASSPORT_WIDTH;
 
 	std::string mrzLine1;
 	std::string mrzLine2;
@@ -50,9 +47,11 @@ private:
 	bool preprocessImg(cv::Mat &, cv::Rect &);
 	void dataToFile(IdentityDocument &);
 
-	const double ID_3_PASSPORT_HEIGHT;
-	const double ID_3_PASSPORT_WIDTH;
-
+	bool detectAndCropSignature(const cv::Mat &);
+	CvRect detectFace(const cv::Mat &);
+	bool getTextFromImage(const cv::Mat &, IdentityDocument &);
+	void cropSection(const cv::Mat & img, CvRect section, const string &fileName);
+	void cropSection(const cv::Mat & img, int posX, int posY, int widthX, int heightY, const string &fileName);
 };
 
 }	// Namespace ip
