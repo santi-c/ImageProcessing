@@ -34,57 +34,12 @@ int main( int argc, const char** argv )
 	
 	//----- Service -------//
 	ImageProcessing service;
-	service.getCustomerInfo(image);
-/*
-	//Read image
-	Mat inputImage = imread(image, CV_LOAD_IMAGE_GRAYSCALE);
-	if(inputImage.empty()){
-		cout << "Error loading " << image << " file." << endl;
-		return 1;
-	}
-
-	//show the image
-	namedWindow(window_name, CV_WINDOW_NORMAL);
-	imshow(window_name, inputImage);
-
-	//----- Service -------//
-	ImageProcessing service;
-	//Set path, directory and default fileName
-	service.setPath(image);
-	//Passport Template, set design -> 1 = Indio, 2 = USA (Default)
-	service.setTemplate(new Template(inputImage, 1));
-	//Data from Image and output
-	IdentityDocument idDoc;
-	if(service.getTextFromImage(inputImage, idDoc))
+	
+	if(!service.getCustomerInfo(image))
 	{
-		//Zone 1
-		cout << "Type: " << idDoc.getType() << endl;
-		cout << "Country: " << idDoc.getCountry() << endl;
-		cout << "Surnames: " << idDoc.getSurnames() << endl;
-		cout << "Given names: " << idDoc.getGivenNames() << endl;
-
-		//Zone 2
-		cout << "Id: " << idDoc.getId() << endl;
-		cout << "CheckId: " << idDoc.getCheckId() << endl;
-		cout << "Nationality: " << idDoc.getNationality() << endl;
-		cout << "Birth date: " << idDoc.getDateBirth() << endl;
-		cout << "Birth check: " << idDoc.getCheckBirth() << endl;
-		cout << "Sex: " << idDoc.getSex() << endl;
-		cout << "Date expiry: " << idDoc.getDateExpiry() << endl;
-		cout << "Check expiry: " << idDoc.getCheckExpiry() << endl;
-		cout << "Optional data: " << idDoc.getOptionalData() << endl;
-		cout << "Check optional: " << idDoc.getCheckOptional() << endl;
-		cout << "Check overall: " << idDoc.getCheckOverall() << endl;
-
+		cout << "Error processing image" << endl;
 	}
-	//Detect, crop and show Face
-	service.cropSection(inputImage, service.detectFace(inputImage), "Face");
-	//Signature, crop and show
-	//service.cropSection(inputImage,service.getTemplate()->getSignature(), "Signature");
 
-	//Signature, crop and show
-	service.detectAndCropSignature(inputImage);
-*/
 	waitKey(0);
     return 0;
 }

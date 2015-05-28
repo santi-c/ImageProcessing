@@ -16,17 +16,6 @@ public:
 
 	bool getCustomerInfo(const string &);
 	
-	Template* getTemplate(){return templateType;};
-	void setTemplate(Template *mTemplateType){templateType = mTemplateType;};
-	string getPath(){return path;};
-	void setPath(string mPath){
-		path = mPath; 
-		int pos1 = path.find_last_of('\\') +1;
-		int pos2 = path.find_last_of('.');
-		directory = path.substr(0, pos1);
-		fName = path.substr(pos1, pos2-pos1);
-	};
-
 private:
 	tesseract::TessBaseAPI * myOCR;
 	const char * text1;
@@ -42,6 +31,11 @@ private:
 	string path;
 	string directory;
 	string fName;
+
+	Template* getTemplate(){return templateType;};
+	void setTemplate(Template *mTemplateType){templateType = mTemplateType;};
+	string getPath(){return path;};
+	void setPath(const string & mPath);
 
 	void splitData(IdentityDocument &, const string &, const string &);
 	bool preprocessImg(cv::Mat &, cv::Rect &);

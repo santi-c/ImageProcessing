@@ -28,7 +28,7 @@ bool ImageProcessing::getCustomerInfo(const string & imgPath){
 	Mat inputImage = imread(imgPath, CV_LOAD_IMAGE_GRAYSCALE);
 	if(inputImage.empty()){
 		cout << "Error loading " << imgPath << " file." << endl;
-		return 0;
+		return false;
 	}
 	//show the image
 	namedWindow("Image", CV_WINDOW_NORMAL);
@@ -64,7 +64,7 @@ bool ImageProcessing::getCustomerInfo(const string & imgPath){
 	cropSection(inputImage, detectFace(inputImage), "Face");
 	//Signature, crop and show
 	detectAndCropSignature(inputImage);
-	return 1;
+	return true;
 };
 
 CvRect ImageProcessing::detectFace(const Mat & srcImg)
@@ -197,6 +197,15 @@ bool ImageProcessing::getTextFromImage(const Mat & img, IdentityDocument & idDoc
 
 }
 
+void ImageProcessing::setPath(const string & mPath)
+{
+	path = mPath; 
+	int pos1 = path.find_last_of('\\') +1;
+	int pos2 = path.find_last_of('.');
+	directory = path.substr(0, pos1);
+	fName = path.substr(pos1, pos2-pos1);
+};
+
 ImageProcessing::~ImageProcessing()
 {
 
@@ -268,7 +277,15 @@ void ImageProcessing::splitData(IdentityDocument & passport, const string & zone
 		passport.setDateExpiry(zone2.substr(21,6));
 		passport.setCheckExpiry(zone2.substr(27,1));
 		passport.setOptionalData(zone2.substr(28,zone2.substr(28,14).find(delimiter2)));
-		passport.setCheckOptional(zone2.substr(42,zone2.substr(42,1).find(delimiter2)));
+		string vCheckOptional = zone2.substr(42,1);
+		if(!vCheckOptional.compare("<"))
+		{
+			passport.setCheckOptional("");
+		}
+		else
+		{
+			passport.setCheckOptional(vCheckOptional);
+		}
 		passport.setCheckOverall(zone2.substr(43,1));
 	}
 }
