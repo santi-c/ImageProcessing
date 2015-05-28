@@ -76,10 +76,10 @@ int main( int argc, const char** argv )
 	//Detect, crop and show Face
 	service.cropSection(inputImage, service.detectFace(inputImage), "Face");
 	//Signature, crop and show
-	service.cropSection(inputImage,service.getTemplate()->getSignature(), "Signature");
+	//service.cropSection(inputImage,service.getTemplate()->getSignature(), "Signature");
 
 	//Signature, crop and show
-	//service.detectAndCropSignature(inputImage);
+	service.detectAndCropSignature(inputImage);
 
 	waitKey(0);
     return 0;

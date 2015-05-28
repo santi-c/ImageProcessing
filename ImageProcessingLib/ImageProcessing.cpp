@@ -311,7 +311,7 @@ bool ImageProcessing::detectAndCropSignature(const cv::Mat & img)
 	}
 
 	Rect signatureRect(xPos, yPos, width, height);
-	//cropSection(img, signatureRect);
+	cropSection(img, signatureRect, "Signature");
 
 	return true;
 }
