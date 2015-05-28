@@ -203,7 +203,7 @@ void ImageProcessing::setPath(const string & mPath)
 	int pos1 = path.find_last_of('\\') +1;
 	int pos2 = path.find_last_of('.');
 	directory = path.substr(0, pos1);
-	fName = path.substr(pos1, pos2-pos1);
+	fName = path.substr(pos1, pos2-pos1) + sep;
 };
 
 ImageProcessing::~ImageProcessing()
@@ -372,9 +372,9 @@ bool ImageProcessing::detectAndCropSignature(const cv::Mat & img)
 }
 
 void ImageProcessing::dataToFile(IdentityDocument & idDoc){
-	cout << "File created: " + directory + fName + ".txt"<< endl;
+	cout << "File created: " + directory + fName + "Info.txt"<< endl;
 	//Open Data File
-	ofstream dataFile( directory + fName + ".txt");
+	ofstream dataFile( directory + fName + "Info.txt");
 	if (dataFile.is_open()){
 		//Zone 1
 		dataFile << "Type: " << idDoc.getType() << endl;
